@@ -7,55 +7,69 @@
 	let {
 		item = $bindable(),
 		index,
+		changed,
 		onDragDrop,
 	}: {
 		item: Item
 		index: number
+		changed: boolean
 		onDragDrop: OnDragDrop
 	} = $props()
-
-	const number = $derived(index + 1)
 </script>
 
-<div class="editor-row" class:editor-row--even={number % 2 === 0} use:draggable={onDragDrop} data-index={index}>
-	<div class="editor-row__number">{number}</div>
+<div class="editor-row" class:editor-row--changed={changed} use:draggable={onDragDrop} data-index={index}>
+	<div class="editor-row__number" title="Перетащите, чтобы поменять местами">
+		<svg class="editor-row__grip" viewBox="0 0 8 14" aria-hidden="true">
+			<circle cx="2" cy="2" r="1.2" /><circle cx="6" cy="2" r="1.2" />
+			<circle cx="2" cy="7" r="1.2" /><circle cx="6" cy="7" r="1.2" />
+			<circle cx="2" cy="12" r="1.2" /><circle cx="6" cy="12" r="1.2" />
+		</svg>
+		{index + 1}
+	</div>
 
 	<Cover bind:cover={item.cover} />
 
-	<div class="editor-row__cell editor-row__cell--name">
-		<input class="editor-row__input" type="text" bind:value={item.name} />
-	</div>
-	<div class="editor-row__cell">
-		<input class="editor-row__input" type="text" bind:value={item.brewery} />
-	</div>
-	<div class="editor-row__cell">
-		<input class="editor-row__input" type="text" bind:value={item.style} />
-	</div>
-	<div class="editor-row__cell editor-row__cell--meta">
-		<input class="editor-row__input" type="text" maxlength="3" bind:value={item.attrs.ibu} />
-	</div>
-	<div class="editor-row__cell editor-row__cell--meta">
-		<input class="editor-row__input" type="text" maxlength="5" bind:value={item.attrs.alc} />
-	</div>
-	<div class="editor-row__cell editor-row__cell--meta">
-		<input class="editor-row__input" type="text" maxlength="4" bind:value={item.attrs.price04} />
-	</div>
-	<div class="editor-row__cell editor-row__cell--meta">
-		<input class="editor-row__input" type="text" maxlength="4" bind:value={item.attrs.price025} />
-	</div>
+	<input
+		class="editor-row__input editor-row__input--name"
+		type="text"
+		placeholder="Название"
+		bind:value={item.name}
+	/>
+	<input class="editor-row__input" type="text" placeholder="Пивоварня" bind:value={item.brewery} />
+	<input class="editor-row__input" type="text" placeholder="Стиль" bind:value={item.style} />
+	<input class="editor-row__input editor-row__input--number" type="text" maxlength="3" bind:value={item.attrs.ibu} />
+	<input class="editor-row__input editor-row__input--number" type="text" maxlength="5" bind:value={item.attrs.alc} />
+	<input
+		class="editor-row__input editor-row__input--number"
+		type="text"
+		maxlength="4"
+		bind:value={item.attrs.price04}
+	/>
+	<input
+		class="editor-row__input editor-row__input--number"
+		type="text"
+		maxlength="4"
+		bind:value={item.attrs.price025}
+	/>
 </div>
 
 <style>
 	.editor-row {
-		display: flex;
+		display: grid;
+		grid-template-columns: var(--editor-columns);
+		gap: 12px;
 		align-items: center;
-		height: 50px;
-		color: #161a1d;
-		background-color: #f8f9fa;
+		margin-bottom: 6px;
+		padding: 8px 14px;
+		border-left: 3px solid transparent;
+		border-radius: 10px;
+		background: #1c1716;
+		transition:
+			background-color 0.15s,
+			border-color 0.15s;
 
 		&:hover {
-			cursor: pointer;
-			background-color: rgb(225 234 90 / 30%);
+			background: #231d1b;
 		}
 
 		/* Классы перетаскивания ставит draggable.ts, Svelte о них не знает. */
@@ -65,47 +79,66 @@
 
 		&__number {
 			cursor: grab;
-			width: 50px;
-			font-size: 32px;
-			font-weight: 600;
-			color: #495057;
-			text-align: center;
+			display: flex;
+			gap: 8px;
+			align-items: center;
+			font-family: Blinker, sans-serif;
+			font-size: 24px;
+			font-weight: 700;
+			color: #8a7e72;
 		}
 
-		&__cell {
-			flex-grow: 1;
-			flex-shrink: 0;
-			width: 140px;
-			padding: 0 10px;
-		}
-
-		&__cell--name {
-			width: 200px;
-		}
-
-		&__cell--meta {
-			width: 80px;
+		&__grip {
+			width: 8px;
+			height: 14px;
+			fill: #4a403b;
 		}
 
 		&__input {
-			width: 100%;
-			padding: 8px;
-			border: 1px solid #dee2e6;
-			font-size: 14px;
-			background: #fff;
+			min-width: 0;
+			padding: 8px 10px;
+			border: 1px solid #2e2725;
+			border-radius: 6px;
+			font: inherit;
+			font-size: 15px;
+			color: #f1e6d3;
+			background: #131111;
+			transition: border-color 0.15s;
+
+			&::placeholder {
+				color: #4a403b;
+			}
+
+			&:hover {
+				border-color: #4a403b;
+			}
+
+			&:focus {
+				border-color: #e0a458;
+				outline: none;
+			}
+		}
+
+		&__input--name {
+			font-size: 17px;
+			font-weight: 700;
+		}
+
+		&__input--number {
+			font-variant-numeric: tabular-nums;
+			text-align: right;
 		}
 	}
 
-	.editor-row--even {
-		background-color: #e9ecef;
+	.editor-row--changed {
+		border-left-color: #e0a458;
 	}
 
 	:global(.editor-row--dragged) {
-		opacity: 0.5;
+		opacity: 0.4;
 	}
 
 	:global(.editor-row--over) {
-		transform: scale(1.05);
-		box-shadow: 0 0 20px rgb(0 0 0 / 50%);
+		box-shadow: inset 0 0 0 1px #e0a458;
 	}
 </style>

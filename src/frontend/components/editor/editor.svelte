@@ -1,20 +1,27 @@
 <script lang="ts">
 	import { onMount } from 'svelte'
 
+	import { groupTitle } from '#frontend/lib/tap-groups.ts'
 	import type { Item } from '#shared/types.ts'
 
 	import EditorRow from './editor-row.svelte'
 
 	let items: Item[] = $state([])
-	let saved = $state('')
+	let saved: Item[] = $state([])
 	let loading = $state(true)
 	let saving = $state(false)
+	let error = $state('')
 
-	const modified = $derived(!loading && JSON.stringify(items) !== saved)
+	const savedJson = $derived(JSON.stringify(saved))
+	const modified = $derived(!loading && JSON.stringify(items) !== savedJson)
 
 	function apply(next: Item[]) {
 		items = next
-		saved = JSON.stringify(next)
+		saved = structuredClone(next)
+	}
+
+	function isChanged(index: number) {
+		return JSON.stringify(items[index]) !== JSON.stringify(saved[index])
 	}
 
 	async function request(init?: RequestInit) {
@@ -26,6 +33,7 @@
 	async function save(event: SubmitEvent) {
 		event.preventDefault()
 		saving = true
+		error = ''
 
 		try {
 			apply(
@@ -35,11 +43,16 @@
 					body: JSON.stringify(items),
 				}),
 			)
-		} catch (error) {
-			alert(`Не удалось сохранить: ${(error as Error).message}`)
+		} catch (reason) {
+			error = `Не сохранилось: ${(reason as Error).message}`
 		} finally {
 			saving = false
 		}
+	}
+
+	function revert() {
+		items = structuredClone($state.snapshot(saved))
+		error = ''
 	}
 
 	function onDragDrop(current: number, next: number) {
@@ -53,7 +66,7 @@
 	onMount(() => {
 		request()
 			.then(apply)
-			.catch((error) => alert(`Не удалось загрузить таплист: ${error.message}`))
+			.catch((reason) => (error = `Не загрузился таплист: ${reason.message}`))
 			.finally(() => (loading = false))
 	})
 </script>
@@ -61,31 +74,65 @@
 <svelte:window onbeforeunload={onBeforeUnload} />
 
 <form class="editor" onsubmit={save}>
-	{#if modified}
-		<button class="editor__save" class:editor__save--busy={saving} disabled={saving} type="submit">Сохранить</button
-		>
-	{/if}
+	<header class="editor__bar">
+		<div class="editor__brand">
+			<svg class="editor__logo" viewBox="0 0 48 48" aria-hidden="true">
+				<path d="M9 16h24v24a4 4 0 0 1-4 4H13a4 4 0 0 1-4-4z" />
+				<path d="M33 21h4a4 4 0 0 1 4 4v6a4 4 0 0 1-4 4h-4" />
+				<path d="M9 16a5 5 0 0 1 4-8 6 6 0 0 1 10-2 5 5 0 0 1 8 3 4 4 0 0 1 2 7" />
+				<path d="M16 24v12M21 24v12M26 24v12" />
+			</svg>
+			<span class="editor__title">Таплист</span>
+			<span class="editor__subtitle">редактор</span>
+		</div>
 
-	<h1 class="editor__heading">Таплист</h1>
+		<p class="editor__status" class:editor__status--dirty={modified} class:editor__status--error={error}>
+			{#if error}
+				{error}
+			{:else if loading}
+				Загрузка…
+			{:else if modified}
+				Есть несохранённые изменения
+			{:else}
+				Все изменения сохранены
+			{/if}
+		</p>
 
-	{#if loading}
-		<p class="editor__status">Загрузка…</p>
-	{:else}
-		<div class="editor__table">
+		<div class="editor__actions">
+			<button class="editor__button" type="button" disabled={!modified || saving} onclick={revert}
+				>Отменить</button
+			>
+			<button
+				class="editor__button editor__button--primary"
+				class:editor__button--busy={saving}
+				type="submit"
+				disabled={!modified || saving}
+			>
+				{saving ? 'Сохраняю…' : 'Сохранить'}
+			</button>
+		</div>
+	</header>
+
+	{#if !loading}
+		<div class="editor__list">
 			<div class="editor__head">
-				<div class="editor__head-cell editor__head-cell--number">#</div>
-				<div class="editor__head-cell editor__head-cell--cover"></div>
-				<div class="editor__head-cell editor__head-cell--name">Название</div>
-				<div class="editor__head-cell">Пивоварня</div>
-				<div class="editor__head-cell">Стиль</div>
-				<div class="editor__head-cell editor__head-cell--meta">IBU</div>
-				<div class="editor__head-cell editor__head-cell--meta">ALC</div>
-				<div class="editor__head-cell editor__head-cell--meta">0.4</div>
-				<div class="editor__head-cell editor__head-cell--meta">0.25</div>
+				<span>#</span>
+				<span></span>
+				<span>Название</span>
+				<span>Пивоварня</span>
+				<span>Стиль</span>
+				<span class="editor__head-cell--right">IBU</span>
+				<span class="editor__head-cell--right">ALC</span>
+				<span class="editor__head-cell--right">0,4</span>
+				<span class="editor__head-cell--right">0,25</span>
 			</div>
 
 			{#each items as item, index (item)}
-				<EditorRow bind:item={items[index]} {index} {onDragDrop} />
+				{@const title = groupTitle(index)}
+				{#if title}
+					<h2 class="editor__group">{title}</h2>
+				{/if}
+				<EditorRow bind:item={items[index]} {index} changed={isChanged(index)} {onDragDrop} />
 			{/each}
 		</div>
 	{/if}
@@ -93,99 +140,162 @@
 
 <style>
 	.editor {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		min-height: 100vh;
-		padding: 0 25px 50px;
-		background-color: #2b2d42;
+		--bg: #131111;
+		--surface: #1c1716;
+		--line: #2e2725;
+		--fg: #f1e6d3;
+		--muted: #8a7e72;
+		--accent: #e0a458;
+		--danger: #e5735c;
 
-		&__heading {
-			margin: 25px 0;
-			font-size: 48px;
-			font-weight: 400;
-			color: #8d99ae;
-			text-align: center;
+		min-height: 100vh;
+		color: var(--fg);
+		background: var(--bg);
+
+		&__bar {
+			position: sticky;
+			z-index: 2;
+			top: 0;
+			display: flex;
+			gap: 24px;
+			align-items: center;
+			padding: 14px 32px;
+			border-bottom: 1px solid var(--line);
+			background: rgb(19 17 17 / 92%);
+			backdrop-filter: blur(8px);
+		}
+
+		&__brand {
+			display: flex;
+			gap: 10px;
+			align-items: baseline;
+		}
+
+		&__logo {
+			align-self: center;
+			width: 28px;
+			height: 28px;
+			fill: none;
+			stroke: var(--accent);
+			stroke-linecap: round;
+			stroke-linejoin: round;
+			stroke-width: 2.6;
+		}
+
+		&__title {
+			font-size: 26px;
+			font-weight: 700;
+		}
+
+		&__subtitle {
+			font-size: 13px;
+			font-weight: 700;
+			color: var(--accent);
+			text-transform: uppercase;
+			letter-spacing: 0.2em;
 		}
 
 		&__status {
-			color: #8d99ae;
+			flex: 1;
+			margin: 0;
+			font-size: 15px;
+			color: var(--muted);
+			text-align: right;
 		}
 
-		&__save {
-			cursor: pointer;
-			position: fixed;
-			z-index: 2;
-			top: 0;
-			left: 0;
-			display: block;
-			padding: 10px 20px 15px;
-			border: none;
-			font-size: 32px;
-			line-height: 1;
-			color: #fff;
-			text-align: center;
-			background-color: rgb(35 193 54 / 90%);
-			box-shadow: 0 10px 20px rgb(0 0 0 / 30%);
+		&__status--dirty {
+			color: var(--accent);
+		}
 
-			&:hover {
-				background-color: rgb(65 245 87);
+		&__status--error {
+			color: var(--danger);
+		}
+
+		&__actions {
+			display: flex;
+			gap: 10px;
+		}
+
+		&__button {
+			cursor: pointer;
+			padding: 9px 18px;
+			border: 1px solid var(--line);
+			border-radius: 8px;
+			font: inherit;
+			font-size: 16px;
+			font-weight: 700;
+			color: var(--fg);
+			background: transparent;
+			transition:
+				background-color 0.15s,
+				border-color 0.15s,
+				opacity 0.15s;
+
+			&:hover:not(:disabled) {
+				border-color: var(--muted);
 			}
 
 			&:disabled {
-				cursor: not-allowed;
+				cursor: default;
+				opacity: 0.35;
 			}
 		}
 
-		&__save--busy {
-			animation: busy 1s infinite;
+		&__button--primary {
+			border-color: var(--accent);
+			color: #1a1210;
+			background: var(--accent);
+
+			&:hover:not(:disabled) {
+				border-color: #ecb877;
+				background: #ecb877;
+			}
 		}
 
-		&__table {
-			background-color: #fff;
+		&__button--busy {
+			animation: busy 1s ease-in-out infinite;
+		}
+
+		&__list {
+			max-width: 1240px;
+			margin: 0 auto;
+			padding: 24px 32px 64px;
 		}
 
 		&__head {
-			display: flex;
-		}
-
-		&__head-cell {
-			width: 140px;
-			height: 50px;
-			font-size: 18px;
+			display: grid;
+			grid-template-columns: var(--editor-columns);
+			gap: 12px;
+			padding: 0 14px 8px;
+			font-size: 12px;
 			font-weight: 700;
-			line-height: 50px;
-			color: #343a40;
-			text-align: center;
+			color: var(--muted);
 			text-transform: uppercase;
+			letter-spacing: 0.12em;
 		}
 
-		&__head-cell--number {
-			width: 50px;
-			font-size: 32px;
+		&__head-cell--right {
+			text-align: right;
 		}
 
-		&__head-cell--cover {
-			width: 50px;
-		}
-
-		&__head-cell--name {
-			width: 200px;
-		}
-
-		&__head-cell--meta {
-			width: 80px;
+		&__group {
+			margin: 28px 0 10px;
+			font-size: 14px;
+			font-weight: 700;
+			color: var(--accent);
+			text-transform: uppercase;
+			letter-spacing: 0.18em;
 		}
 	}
 
-	@keyframes busy {
-		0%,
-		100% {
-			background-color: #f4a261;
-		}
+	/* Колонки шапки и строк должны совпадать, поэтому сетка общая. */
+	:global(:root) {
+		--editor-columns: 56px 48px minmax(0, 2fr) minmax(0, 1.2fr) minmax(0, 1.2fr) 64px 64px 72px 72px;
+	}
 
+	@keyframes busy {
 		50% {
-			background-color: #e76f51;
+			opacity: 0.6;
 		}
 	}
 </style>

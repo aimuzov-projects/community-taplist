@@ -54,11 +54,15 @@
 		cursor: pointer;
 		position: relative;
 		display: block;
-		width: 50px;
-		height: 50px;
+		width: 48px;
+		height: 60px;
 		padding: 0;
 		border: none;
+		border-radius: 6px;
+		background-color: #131111;
+		background-position: center;
 		background-size: cover;
+		box-shadow: inset 0 0 0 1px #2e2725;
 
 		&:hover .cover__preview {
 			opacity: 1;
@@ -71,16 +75,16 @@
 		&__preview {
 			pointer-events: none;
 			position: absolute;
-			z-index: 1;
+			z-index: 3;
 			top: 50%;
-			left: 50%;
-			transform: translate(-50%, -50%);
+			left: calc(100% + 12px);
+			transform: translateY(-50%);
 			max-width: 200px;
 			max-height: 250px;
-			border: #fff 15px solid;
+			border-radius: 8px;
 			opacity: 0;
-			box-shadow: 0 0 24px rgb(0 0 0 / 50%);
-			transition: all 0.25s ease-out;
+			box-shadow: 0 12px 40px rgb(0 0 0 / 60%);
+			transition: opacity 0.2s ease-out;
 		}
 
 		&__loading {
@@ -89,7 +93,8 @@
 			left: 0;
 			width: 100%;
 			height: 100%;
-			background: rgb(255 255 255 / 90%);
+			border-radius: 6px;
+			background: rgb(19 17 17 / 85%);
 		}
 	}
 </style>
