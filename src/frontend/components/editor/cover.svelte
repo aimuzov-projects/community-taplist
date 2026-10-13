@@ -2,6 +2,7 @@
 	import ImagePlus from '@lucide/svelte/icons/image-plus'
 
 	import Spinner from './spinner.svelte'
+	import { tooltip } from './tooltip.ts'
 
 	let { cover = $bindable() }: { cover: string } = $props()
 
@@ -40,7 +41,14 @@
 	}
 </script>
 
-<button class="cover" type="button" onclick={() => input.click()} style:background-image="url({cover})">
+<button
+	class="cover"
+	type="button"
+	aria-label={cover ? 'Заменить обложку' : 'Загрузить обложку'}
+	use:tooltip={cover ? 'Заменить обложку: JPG или PNG, ужмётся сама' : 'Загрузить обложку: JPG или PNG'}
+	onclick={() => input.click()}
+	style:background-image="url({cover})"
+>
 	<input class="cover__input" type="file" accept=".jpg, .jpeg, .png" onchange={change} bind:this={input} />
 	{#if cover}
 		<img class="cover__preview" src={cover} alt="" />
