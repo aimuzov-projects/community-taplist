@@ -2,7 +2,6 @@
 	import { onMount } from 'svelte'
 
 	import { BUILD_VERSION } from '#frontend/lib/build.ts'
-	import { remoteKey } from '#shared/remote.ts'
 	import { tvColumns } from '#shared/tv.ts'
 	import type { Item } from '#shared/types.ts'
 
@@ -36,21 +35,12 @@
 		items = ((await response.json()) as { items: Item[] }).items
 	}
 
-	function onKeydown(event: KeyboardEvent) {
-		if (remoteKey(event) !== 'back') return
-
-		event.preventDefault()
-		location.href = '/'
-	}
-
 	onMount(() => {
 		refresh().catch(console.error)
 		const intervalId = setInterval(() => refresh().catch(console.error), intervalMs)
 		return () => clearInterval(intervalId)
 	})
 </script>
-
-<svelte:window onkeydown={onKeydown} />
 
 <div class="tap-board">
 	{#each columns as column, index (index)}

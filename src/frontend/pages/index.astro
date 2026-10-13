@@ -1,9 +1,65 @@
 ---
-import ScreenPicker from '#frontend/components/tv/screen-picker.svelte'
 import Base from '#frontend/layouts/base.astro'
+import { TV_COUNT } from '#shared/constants.ts'
 import '#frontend/styles/tv.css'
+
+const screens = Array.from({ length: TV_COUNT }, (_, index) => index + 1)
 ---
 
 <Base title="Таплист">
-	<ScreenPicker client:load />
+	<div class="screen-picker">
+		{screens.map((screen) => (
+			<a class="screen-picker__screen" href={`/tv/${screen}`}>
+				<span class="screen-picker__number">{screen}</span>
+				<span class="screen-picker__label">Экран {screen}</span>
+			</a>
+		))}
+	</div>
 </Base>
+
+<style>
+	.screen-picker {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 1920rem;
+		height: 1080rem;
+		background-color: #131111;
+
+		&__screen {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			justify-content: center;
+			width: 560rem;
+			height: 560rem;
+			/* Flex gap появился в Chromium 84, отступы работают везде. */
+			margin: 0 60rem;
+			border: 8rem solid transparent;
+			border-radius: 24rem;
+			color: #7e7c7c;
+			text-decoration: none;
+			background-color: #1e1919;
+			transition:
+				transform 0.15s ease-out,
+				border-color 0.15s ease-out;
+
+			&:hover {
+				transform: scale(1.05);
+				border-color: #d1d1d1;
+				color: #d1d1d1;
+			}
+		}
+
+		&__number {
+			font-family: Blinker, sans-serif;
+			font-size: 320rem;
+			font-weight: 700;
+			line-height: 1;
+		}
+
+		&__label {
+			font-size: 56rem;
+		}
+	}
+</style>

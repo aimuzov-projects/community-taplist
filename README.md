@@ -4,7 +4,7 @@
 </p>
 
 <p align="center">
-	<a href="https://taplist.aimuzov.online"><img src=".github/assets/banner.jpg" alt="Taplist: a digital tap board for a craft beer bar" width="100%"></a>
+	<a href="https://taplist.aimuzov.online"><img src=".github/assets/banner.en.jpg" alt="Taplist: a digital tap board for a craft beer bar" width="100%"></a>
 </p>
 
 <p align="center">
@@ -30,8 +30,8 @@ Lives at [taplist.aimuzov.online](https://taplist.aimuzov.online). A static [Ast
 
 ## What's inside
 
-- **Screen picker** (`/`): left/right on the remote to choose, OK to open.
-- **Boards** (`/tv/1`, `/tv/2`): 1920×1080, 12 taps per screen. RETURN goes back to the picker. Boards pick up a fresh list in place, without a reload, and reload once after a deploy. The 25th tap alternates with the last slot of the second screen.
+- **Screen picker** (`/`): two links, one per TV.
+- **Boards** (`/tv/1`, `/tv/2`): 1920×1080, 12 taps per screen. Boards pick up a fresh list in place, without a reload, and reload once after a deploy. The 25th tap alternates with the last slot of the second screen.
 - **Editor** (`/editor`): names, breweries, styles, IBU, ABV and prices, drag-and-drop reordering, covers (shrunk in the browser to 250 px and stored in the gist itself).
 - **API**: `GET /api/items` for the boards, `PUT /api/items` for the editor, `GET /api/health`.
 
