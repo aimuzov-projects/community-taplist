@@ -49,7 +49,9 @@ const routes: Record<string, (request: IncomingMessage) => Promise<Reply>> = {
 	'PUT /api/items': async (request) => {
 		const items = await readJson(request)
 		if (!isItemList(items)) throw new HttpError(400, 'Ожидается список кранов')
-		return [200, { items: await itemsPut(items) }]
+		await itemsPut(items)
+		// Список с обложками весит мегабайты, а редактор и так знает, что отправил.
+		return [200, { ok: true }]
 	},
 
 	'GET /api/health': async () => [200, { ok: true }],
