@@ -1,4 +1,13 @@
 <p align="center">
+	<img src="https://img.shields.io/badge/English-e0a458?logo=data:image/svg%2bxml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2MCAzMCI+PGNsaXBQYXRoIGlkPSJ0Ij48cGF0aCBkPSJNMzAsMTVoMzB2MTV6djE1aC0zMHpoLTMwdi0xNXp2LTE1aDMweiIvPjwvY2xpcFBhdGg+PHBhdGggZD0iTTAsMHYzMGg2MHYtMzB6IiBmaWxsPSIjMDEyMTY5Ii8+PHBhdGggZD0iTTAsMCA2MCwzME02MCwwIDAsMzAiIHN0cm9rZT0iI2ZmZiIgc3Ryb2tlLXdpZHRoPSI2Ii8+PHBhdGggZD0iTTAsMCA2MCwzME02MCwwIDAsMzAiIGNsaXAtcGF0aD0idXJsKCN0KSIgc3Ryb2tlPSIjQzgxMDJFIiBzdHJva2Utd2lkdGg9IjQiLz48cGF0aCBkPSJNMzAsMHYzME0wLDE1aDYwIiBzdHJva2U9IiNmZmYiIHN0cm9rZS13aWR0aD0iMTAiLz48cGF0aCBkPSJNMzAsMHYzME0wLDE1aDYwIiBzdHJva2U9IiNDODEwMkUiIHN0cm9rZS13aWR0aD0iNiIvPjwvc3ZnPg==" alt="English">
+	<a href="README.ru.md"><img src="https://img.shields.io/badge/%D0%A0%D1%83%D1%81%D1%81%D0%BA%D0%B8%D0%B9-555?logo=data:image/svg%2bxml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA5IDYiPjxwYXRoIGZpbGw9IiNmZmYiIGQ9Ik0wIDBoOXYzSDB6Ii8+PHBhdGggZmlsbD0iIzAwMzlhNiIgZD0iTTAgMmg5djJIMHoiLz48cGF0aCBmaWxsPSIjZDUyYjFlIiBkPSJNMCA0aDl2MkgweiIvPjwvc3ZnPg==" alt="Русский"></a>
+</p>
+
+<p align="center">
+	<a href="https://taplist.aimuzov.online"><img src=".github/assets/banner.jpg" alt="Taplist: a digital tap board for a craft beer bar" width="100%"></a>
+</p>
+
+<p align="center">
 	<a href="https://github.com/aimuzov-projects/community-taplist/actions/workflows/deploy.yml"><img src="https://img.shields.io/github/actions/workflow/status/aimuzov-projects/community-taplist/deploy.yml?branch=main&label=deploy" alt="Deploy"></a>
 	<a href="https://taplist.aimuzov.online"><img src="https://img.shields.io/website?url=https%3A%2F%2Ftaplist.aimuzov.online&label=site" alt="Site status"></a>
 	<a href="package.json"><img src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Faimuzov-projects%2Fcommunity-taplist%2Fmain%2Fpackage.json&query=%24.engines.node&label=node&logo=nodedotjs&logoColor=white&color=5fa04e" alt="Node"></a>
@@ -7,11 +16,17 @@
 	<a href="LICENSE"><img src="https://img.shields.io/github/license/aimuzov-projects/community-taplist" alt="License"></a>
 </p>
 
-<p align="center"><b>English</b> · <a href="README.ru.md">Русский</a></p>
+<h3 align="center">A digital tap list for a craft beer bar</h3>
+<p align="center">Boards on the TVs, an editor for bartenders, the list in a GitHub Gist with no database</p>
 
-A digital tap list for a craft beer bar: [taplist.aimuzov.online](https://taplist.aimuzov.online). Two TVs show what is on tap, bartenders edit the list in a password-protected web editor, and the list itself lives in a GitHub Gist, so there is no database.
+<table>
+	<tr>
+		<td width="50%" align="center"><img src=".github/assets/board.jpg" alt="Board"><br><b>Board</b> on the TVs</td>
+		<td width="50%" align="center"><img src=".github/assets/editor.jpg" alt="Editor"><br><b>Editor</b> for bartenders</td>
+	</tr>
+</table>
 
-A static [Astro](https://astro.build) site with Svelte islands plus a small dependency-free Node API (`src/backend/`) that reads and writes the gist and keeps the list in memory, so the TVs never hit GitHub rate limits.
+Lives at [taplist.aimuzov.online](https://taplist.aimuzov.online). A static [Astro](https://astro.build) site with Svelte islands plus a small dependency-free Node API (`src/backend/`) that reads and writes the gist and keeps the list in memory, so the TVs never hit GitHub rate limits.
 
 ## What's inside
 
