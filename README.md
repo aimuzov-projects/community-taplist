@@ -1,4 +1,8 @@
 <p align="center">
+	<a href="https://taplist.aimuzov.online"><img src=".github/assets/banner.jpg" alt="Taplist: a digital tap board for a craft beer bar" width="100%"></a>
+</p>
+
+<p align="center">
 	<a href="https://github.com/aimuzov-projects/community-taplist/actions/workflows/deploy.yml"><img src="https://img.shields.io/github/actions/workflow/status/aimuzov-projects/community-taplist/deploy.yml?branch=main&label=deploy" alt="Deploy"></a>
 	<a href="https://taplist.aimuzov.online"><img src="https://img.shields.io/website?url=https%3A%2F%2Ftaplist.aimuzov.online&label=site" alt="Site status"></a>
 	<a href="package.json"><img src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Faimuzov-projects%2Fcommunity-taplist%2Fmain%2Fpackage.json&query=%24.engines.node&label=node&logo=nodedotjs&logoColor=white&color=5fa04e" alt="Node"></a>
@@ -7,7 +11,10 @@
 	<a href="LICENSE"><img src="https://img.shields.io/github/license/aimuzov-projects/community-taplist" alt="License"></a>
 </p>
 
-<p align="center"><b>English</b> · <a href="README.ru.md">Русский</a></p>
+<p align="center">
+	<img src="https://img.shields.io/badge/English-e0a458" alt="English">
+	<a href="README.ru.md"><img src="https://img.shields.io/badge/%D0%A0%D1%83%D1%81%D1%81%D0%BA%D0%B8%D0%B9-555" alt="Русский"></a>
+</p>
 
 A digital tap list for a craft beer bar: [taplist.aimuzov.online](https://taplist.aimuzov.online). Two TVs show what is on tap, bartenders edit the list in a password-protected web editor, and the list itself lives in a GitHub Gist, so there is no database.
 
