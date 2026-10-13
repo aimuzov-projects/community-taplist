@@ -2,6 +2,7 @@
 	import Beer from '@lucide/svelte/icons/beer'
 	import CircleAlert from '@lucide/svelte/icons/circle-alert'
 	import CircleCheck from '@lucide/svelte/icons/circle-check'
+	import CircleQuestionMark from '@lucide/svelte/icons/circle-question-mark'
 	import EyeOff from '@lucide/svelte/icons/eye-off'
 	import Repeat from '@lucide/svelte/icons/repeat'
 	import Save from '@lucide/svelte/icons/save'
@@ -13,7 +14,17 @@
 	import type { Item } from '#shared/types.ts'
 
 	import EditorRow from './editor-row.svelte'
+	import Help from './help.svelte'
 	import Spinner from './spinner.svelte'
+	import { tooltip } from './tooltip.ts'
+
+	const groupHints = {
+		screen: 'Эти краны показывает один телевизор, по порядку колонками сверху вниз',
+		extra: 'Этот кран на табло по очереди сменяется с 24-м на последнем месте второго экрана',
+		hidden: 'Мест на табло больше нет: эти краны хранятся в списке, но не показываются',
+	}
+
+	let help: Help
 
 	let items: Item[] = $state([])
 	let saved: Item[] = $state([])
@@ -92,7 +103,14 @@
 			<span class="editor__subtitle">редактор</span>
 		</div>
 
-		<p class="editor__status" class:editor__status--dirty={modified} class:editor__status--error={error}>
+		<p
+			class="editor__status"
+			class:editor__status--dirty={modified}
+			class:editor__status--error={error}
+			use:tooltip={modified
+				? 'Табло показывают прежний список, пока правки не сохранены'
+				: 'Табло показывают то же, что здесь'}
+		>
 			{#if error}
 				<CircleAlert size={16} />{error}
 			{:else if modified}
@@ -103,7 +121,22 @@
 		</p>
 
 		<div class="editor__actions">
-			<button class="editor__button" type="button" disabled={!modified || saving} onclick={revert}>
+			<button
+				class="editor__button editor__button--icon"
+				type="button"
+				aria-label="Как пользоваться редактором"
+				use:tooltip={'Как пользоваться редактором'}
+				onclick={() => help.open()}
+			>
+				<CircleQuestionMark size={18} />
+			</button>
+			<button
+				class="editor__button"
+				type="button"
+				disabled={!modified || saving}
+				use:tooltip={'Вернуть весь список к последнему сохранению'}
+				onclick={revert}
+			>
 				<Undo2 size={18} />Отменить
 			</button>
 			<button
@@ -111,6 +144,7 @@
 				class:editor__button--busy={saving}
 				type="submit"
 				disabled={!modified || saving}
+				use:tooltip={'Отправить список на табло, телевизоры обновятся примерно за минуту'}
 			>
 				<Save size={18} />{saving ? 'Сохраняю…' : 'Сохранить'}
 			</button>
@@ -122,15 +156,16 @@
 	{:else}
 		<div class="editor__list">
 			<div class="editor__head">
-				<span>#</span>
+				<span use:tooltip={'Номер крана: он же стоит на обложке на табло'}>#</span>
 				<span></span>
 				<span>Название</span>
 				<span>Пивоварня</span>
 				<span>Стиль</span>
-				<span class="editor__head-cell--right">IBU</span>
-				<span class="editor__head-cell--right">ALC</span>
-				<span class="editor__head-cell--right">0,4 ₽</span>
-				<span class="editor__head-cell--right">0,25 ₽</span>
+				<span class="editor__head-cell--right" use:tooltip={'Горечь. Если не знаете, оставьте пустым'}>IBU</span
+				>
+				<span class="editor__head-cell--right" use:tooltip={'Крепость, %'}>ALC</span>
+				<span class="editor__head-cell--right" use:tooltip={'Цена за 0,4 л, ₽'}>0,4 ₽</span>
+				<span class="editor__head-cell--right" use:tooltip={'Цена за 0,25 л, ₽'}>0,25 ₽</span>
 				<span></span>
 			</div>
 
@@ -138,13 +173,19 @@
 				{@const group = tapGroup(index)}
 				{#if group}
 					{@const Icon = { screen: Tv, extra: Repeat, hidden: EyeOff }[group.kind]}
-					<h2 class="editor__group"><Icon size={16} />{group.title}</h2>
+					<h2 class="editor__group">
+						<span class="editor__group-label" use:tooltip={groupHints[group.kind]}>
+							<Icon size={16} />{group.title}
+						</span>
+					</h2>
 				{/if}
 				<EditorRow bind:item={items[index]} {index} changed={isChanged(index)} {onDragDrop} />
 			{/each}
 		</div>
 	{/if}
 </form>
+
+<Help bind:this={help} />
 
 <style>
 	.editor {
@@ -252,6 +293,10 @@
 			}
 		}
 
+		&__button--icon {
+			padding: 9px;
+		}
+
 		&__button--primary {
 			border-color: var(--accent);
 			color: #1a1210;
@@ -311,9 +356,6 @@
 		}
 
 		&__group {
-			display: flex;
-			gap: 8px;
-			align-items: center;
 			margin: 28px 0 10px;
 			font-size: 14px;
 			font-weight: 700;
@@ -321,12 +363,43 @@
 			text-transform: uppercase;
 			letter-spacing: 0.18em;
 		}
+
+		/* Подсказка висит на подписи, а не на всей строке заголовка до правого края. */
+		&__group-label {
+			cursor: help;
+			display: inline-flex;
+			gap: 8px;
+			align-items: center;
+		}
 	}
 
 	/* Колонки шапки и строк должны совпадать, поэтому сетка общая. */
 	:global(:root) {
 		--editor-columns: 56px 48px minmax(0, 2fr) minmax(0, 1.2fr) minmax(0, 1.2fr) 64px 64px 72px 72px 32px;
 		--bar-height: 68px;
+	}
+
+	/* Плашку подсказки tooltip.ts вешает прямо в body, поэтому стили у неё глобальные. */
+	:global(.editor-tooltip) {
+		pointer-events: none;
+		position: fixed;
+		z-index: 10;
+		max-width: 280px;
+		padding: 7px 10px;
+		border: 1px solid #3a3230;
+		border-radius: 8px;
+		font-family: Arsenal, sans-serif;
+		font-size: 14px;
+		line-height: 1.35;
+		color: #f1e6d3;
+		opacity: 0;
+		background: #241e1c;
+		box-shadow: 0 8px 24px rgb(0 0 0 / 50%);
+		transition: opacity 0.12s;
+	}
+
+	:global(.editor-tooltip--visible) {
+		opacity: 1;
 	}
 
 	@keyframes busy {

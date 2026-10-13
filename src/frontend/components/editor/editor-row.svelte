@@ -7,6 +7,7 @@
 
 	import Cover from './cover.svelte'
 	import { draggable, type OnDragDrop } from './draggable.ts'
+	import { tooltip } from './tooltip.ts'
 
 	let {
 		item = $bindable(),
@@ -52,7 +53,7 @@
 	use:draggable={onDragDrop}
 	data-index={index}
 >
-	<div class="editor-row__number" title="Перетащите, чтобы поменять местами">
+	<div class="editor-row__number" use:tooltip={'Перетащите строку за номер, чтобы поменять краны местами'}>
 		<span class="editor-row__grip"><GripVertical size={16} /></span>
 		{index + 1}
 	</div>
@@ -85,7 +86,7 @@
 		<button
 			class="editor-row__action editor-row__action--clear"
 			type="button"
-			title="Очистить кран"
+			use:tooltip={'Стереть кран: на табло он станет «Скоро новое»'}
 			aria-label="Очистить кран {index + 1}"
 			onclick={clear}
 		>
@@ -95,7 +96,7 @@
 		<button
 			class="editor-row__action editor-row__action--restore"
 			type="button"
-			title="Восстановить «{erased.name}»"
+			use:tooltip={`Вернуть «${erased.name}», как было до стирания`}
 			aria-label="Восстановить кран {index + 1}"
 			onclick={restore}
 		>
