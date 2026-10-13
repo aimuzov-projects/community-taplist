@@ -9,3 +9,6 @@ dist/
 !.env.example
 docker-compose.override.yml
 .serena
+
+# Список кранов при локальном запуске API.
+.data/

@@ -17,7 +17,7 @@
 </p>
 
 <h3 align="center">A digital tap list for a craft beer bar</h3>
-<p align="center">Boards on the TVs, an editor for bartenders, the list in a GitHub Gist with no database</p>
+<p align="center">Boards on the TVs, an editor for bartenders, the list in a JSON file with no database</p>
 
 <table>
 	<tr>
@@ -26,13 +26,13 @@
 	</tr>
 </table>
 
-Lives at [taplist.aimuzov.online](https://taplist.aimuzov.online). A static [Astro](https://astro.build) site with Svelte islands plus a small dependency-free Node API (`src/backend/`) that reads and writes the gist and keeps the list in memory, so the TVs never hit GitHub rate limits.
+Lives at [taplist.aimuzov.online](https://taplist.aimuzov.online). A static [Astro](https://astro.build) site with Svelte islands plus a small dependency-free Node API (`src/backend/`) that stores the list in a JSON file on the server and keeps it in memory.
 
 ## What's inside
 
 - **Screen picker** (`/`): two links, one per TV.
 - **Boards** (`/tv/1`, `/tv/2`): 1920×1080, 12 taps per screen. Boards pick up a fresh list in place, without a reload, and reload once after a deploy. The 25th tap alternates with the last slot of the second screen.
-- **Editor** (`/editor`): names, breweries, styles, IBU, ABV and prices, drag-and-drop reordering, covers (shrunk in the browser to 250 px and stored in the gist itself).
+- **Editor** (`/editor`): names, breweries, styles, IBU, ABV and prices, drag-and-drop reordering, covers (shrunk in the browser to 250 px and stored in the list itself).
 - **API**: `GET /api/items` for the boards, `PUT /api/items` for the editor, `GET /api/health`.
 
 ## Running
@@ -52,13 +52,16 @@ Before committing:
 npm run format:check && npm run lint:js && npm run lint:css && npm run check && npm test
 ```
 
-### Gist
+### Data
 
-1. Create a secret gist with a file such as `taplist.json` containing `{ "record": [] }`.
-2. Create a [fine-grained token](https://github.com/settings/personal-access-tokens/new) with only **Gists: Read and write**.
-3. Put the token, the gist ID (the end of its URL) and the file name into `.env`, see [`.env.example`](.env.example).
+The tap list is a single JSON file, `taplist.json`, in `DATA_DIR`: on the server that is the `community-taplist-data` volume mounted at `/data`, locally `.data/` in the repo root. Locally the API creates the file from the sample on first run; in production it refuses to start without it.
 
-The editor overwrites the whole file. With `CACHE=1`, edits made directly in the gist show up only after the API restarts.
+The editor overwrites the whole file and moves the previous version to `history/`, which keeps the last 30 saves. To restore one:
+
+```sh
+ssh projects 'docker exec community-taplist-api ls /data/history'
+ssh projects 'docker exec community-taplist-api cp /data/history/<version>.json /data/taplist.json && docker restart community-taplist-api'
+```
 
 ## TVs
 

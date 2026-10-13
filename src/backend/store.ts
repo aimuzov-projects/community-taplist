@@ -1,83 +1,87 @@
+import { copyFile, mkdir, readdir, readFile, rename, rm, writeFile } from 'node:fs/promises'
+import { join } from 'node:path'
+
 import { mockItems } from '#shared/mock.ts'
-import type { Item } from '#shared/types.ts'
+import { isItemList, type Item } from '#shared/types.ts'
 
-const API = 'https://api.github.com'
+/** Сколько прошлых версий списка держать в `history/`: хватит, чтобы вернуть случайно стёртый кран. */
+export const HISTORY_LIMIT = 30
 
-type GistFile = { content?: string; truncated?: boolean; raw_url?: string }
+const production = () => process.env.NODE_ENV === 'production'
+const dataDir = () => process.env.DATA_DIR || (production() ? '/data' : '.data')
+const dataFile = () => join(dataDir(), 'taplist.json')
+const historyDir = () => join(dataDir(), 'history')
 
-// Без токена вне продакшна отдаём пример из памяти: настраивать GitHub для разработки не нужно.
-function useMock() {
-	return process.env.NODE_ENV !== 'production' && !process.env.GITHUB_API_TOKEN
-}
+async function read(): Promise<Item[]> {
+	let text: string
 
-function gistConfig() {
-	const { GITHUB_API_TOKEN: token, GITHUB_GIST_ID: id, GITHUB_GIST_FILENAME: filename } = process.env
+	try {
+		text = await readFile(dataFile(), 'utf8')
+	} catch (error) {
+		if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error
 
-	if (!token || !id || !filename) {
-		throw new Error('Не заданы GITHUB_API_TOKEN, GITHUB_GIST_ID или GITHUB_GIST_FILENAME')
+		// Пустой список вместо потерянного файла молча очистил бы табло, поэтому падаем.
+		if (production()) throw new Error(`Нет файла ${dataFile()}: список кранов не найден`)
+
+		await write(structuredClone(mockItems))
+		return structuredClone(mockItems)
 	}
 
-	return { token, id, filename }
+	const items: unknown = JSON.parse(text)
+	if (!isItemList(items)) throw new Error(`В ${dataFile()} не список кранов`)
+
+	return items
 }
 
-async function github(path: string, token: string, init: RequestInit = {}) {
-	const response = await fetch(`${API}${path}`, {
-		...init,
-		headers: {
-			accept: 'application/vnd.github+json',
-			authorization: `Bearer ${token}`,
-			'x-github-api-version': '2022-11-28',
-			...init.headers,
-		},
+let historySeq = 0
+
+async function keepHistory() {
+	await mkdir(historyDir(), { recursive: true })
+
+	try {
+		// Двоеточия из ISO-времени неудобны в именах файлов. Счётчик разводит сохранения в одну
+		// миллисекунду, а порядок по имени остаётся хронологическим.
+		const stamp = new Date().toISOString().replaceAll(':', '-')
+		const seq = String(++historySeq).padStart(6, '0')
+		await copyFile(dataFile(), join(historyDir(), `${stamp}-${seq}.json`))
+	} catch (error) {
+		if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error
+	}
+
+	const versions = (await readdir(historyDir())).filter((name) => name.endsWith('.json')).sort()
+	for (const name of versions.slice(0, -HISTORY_LIMIT)) await rm(join(historyDir(), name))
+}
+
+async function write(items: Item[]) {
+	await mkdir(dataDir(), { recursive: true })
+	await keepHistory()
+
+	// Сначала пишем рядом, потом подменяем: оборванная запись не оставит битый файл.
+	const temp = `${dataFile()}.tmp`
+	await writeFile(temp, JSON.stringify(items, null, 2))
+	await rename(temp, dataFile())
+}
+
+let cache: Promise<Item[]> | undefined
+// Сохранения идут по одному: два одновременных PUT не перемешают историю и файл.
+let queue: Promise<unknown> = Promise.resolve()
+
+export function itemsGet(): Promise<Item[]> {
+	cache ??= read().catch((error) => {
+		cache = undefined
+		throw error
 	})
-
-	if (!response.ok) throw new Error(`GitHub ответил ${response.status} на ${init.method ?? 'GET'} ${path}`)
-
-	return response
-}
-
-async function gistRead(): Promise<Item[]> {
-	if (useMock()) return structuredClone(mockItems)
-
-	const { token, id, filename } = gistConfig()
-	const gist = (await (await github(`/gists/${id}`, token)).json()) as { files?: Record<string, GistFile> }
-	const file = gist.files?.[filename]
-
-	if (!file) throw new Error(`В gist нет файла «${filename}»`)
-
-	// API отдаёт содержимое целиком только до ~1 МБ, больший файл читается отдельно.
-	const content =
-		file.truncated || !file.content ? await fetch(file.raw_url ?? '').then((r) => r.text()) : file.content
-
-	return (JSON.parse(content) as { record: Item[] }).record
-}
-
-async function gistWrite(record: Item[]) {
-	if (useMock()) return
-
-	const { token, id, filename } = gistConfig()
-
-	await github(`/gists/${id}`, token, {
-		method: 'PATCH',
-		headers: { 'content-type': 'application/json' },
-		body: JSON.stringify({ files: { [filename]: { content: JSON.stringify({ record }, null, 2) } } }),
-	})
-}
-
-let cache: Item[] | undefined
-
-export async function itemsGet(): Promise<Item[]> {
-	// С CACHE=1 gist читается один раз, дальше его обновляет сохранение из редактора.
-	if (!cache || (process.env.CACHE !== '1' && !useMock())) cache = await gistRead()
-
 	return cache
 }
 
-export async function itemsPut(items: Item[]): Promise<Item[]> {
-	await gistWrite(items)
-	cache = items
-
-	return cache
+export function itemsPut(items: Item[]): Promise<Item[]> {
+	const saved = queue.then(async () => {
+		await write(items)
+		cache = Promise.resolve(items)
+		return items
+	})
+	queue = saved.catch(() => {})
+	return saved
 }
 
 /** Сброс кэша между тестами. */

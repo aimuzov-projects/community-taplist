@@ -3,7 +3,7 @@ import { test } from 'node:test'
 
 import { mockItems } from '#shared/mock.ts'
 
-import { isItemList } from './types.ts'
+import { isEmptyItem, isItemList } from './types.ts'
 
 test('пример таплиста проходит проверку', () => {
 	assert.equal(isItemList(mockItems), true)
@@ -18,4 +18,9 @@ test('не список и кран без полей отклоняются', (
 	assert.equal(isItemList([{ ...mockItems[0], name: 1 }]), false)
 	assert.equal(isItemList([{ ...mockItems[0], attrs: { alc: '5' } }]), false)
 	assert.equal(isItemList([null]), false)
+})
+
+test('кран без названия свободен, даже если остались цены', () => {
+	assert.equal(isEmptyItem({ ...mockItems[0], name: '  ' }), true)
+	assert.equal(isEmptyItem(mockItems[0]), false)
 })
