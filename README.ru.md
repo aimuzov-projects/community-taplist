@@ -13,9 +13,17 @@
 
 > 🇬🇧 [English](README.md) · 🇷🇺 **Русский**
 
-Электронный таплист крафтового бара: [taplist.aimuzov.online](https://taplist.aimuzov.online). Два телевизора показывают, что сейчас на кранах, бармены правят список в веб-редакторе под паролем, а сам список лежит в GitHub Gist -- база не нужна.
+<h3 align="center">Электронный таплист крафтового бара</h3>
+<p align="center">Табло на телевизорах, редактор для барменов, список в GitHub Gist -- без базы данных</p>
 
-Статичный сайт на [Astro](https://astro.build) с островами на Svelte и маленький API (`src/backend/`) на Node без зависимостей: он читает и пишет gist и держит список в памяти, чтобы табло не упирались в лимиты GitHub.
+<table>
+	<tr>
+		<td width="50%" align="center"><img src=".github/assets/board.jpg" alt="Табло"><br><b>Табло</b> на телевизорах</td>
+		<td width="50%" align="center"><img src=".github/assets/editor.jpg" alt="Редактор"><br><b>Редактор</b> для барменов</td>
+	</tr>
+</table>
+
+Живёт на [taplist.aimuzov.online](https://taplist.aimuzov.online). Статичный сайт на [Astro](https://astro.build) с островами на Svelte и маленький API (`src/backend/`) на Node без зависимостей: он читает и пишет gist и держит список в памяти, чтобы табло не упирались в лимиты GitHub.
 
 ## Что внутри
 

@@ -13,9 +13,17 @@
 
 > 🇬🇧 **English** · 🇷🇺 [Русский](README.ru.md)
 
-A digital tap list for a craft beer bar: [taplist.aimuzov.online](https://taplist.aimuzov.online). Two TVs show what is on tap, bartenders edit the list in a password-protected web editor, and the list itself lives in a GitHub Gist, so there is no database.
+<h3 align="center">A digital tap list for a craft beer bar</h3>
+<p align="center">Boards on the TVs, an editor for bartenders, the list in a GitHub Gist with no database</p>
 
-A static [Astro](https://astro.build) site with Svelte islands plus a small dependency-free Node API (`src/backend/`) that reads and writes the gist and keeps the list in memory, so the TVs never hit GitHub rate limits.
+<table>
+	<tr>
+		<td width="50%" align="center"><img src=".github/assets/board.jpg" alt="Board"><br><b>Board</b> on the TVs</td>
+		<td width="50%" align="center"><img src=".github/assets/editor.jpg" alt="Editor"><br><b>Editor</b> for bartenders</td>
+	</tr>
+</table>
+
+Lives at [taplist.aimuzov.online](https://taplist.aimuzov.online). A static [Astro](https://astro.build) site with Svelte islands plus a small dependency-free Node API (`src/backend/`) that reads and writes the gist and keeps the list in memory, so the TVs never hit GitHub rate limits.
 
 ## What's inside
 
