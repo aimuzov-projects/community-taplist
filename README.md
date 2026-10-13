@@ -4,7 +4,7 @@
 </p>
 
 <p align="center">
-	<a href="https://taplist.aimuzov.online"><img src=".github/assets/banner.jpg" alt="Taplist: a digital tap board for a craft beer bar" width="100%"></a>
+	<a href="https://taplist.aimuzov.online"><img src=".github/assets/banner.en.jpg" alt="Taplist: a digital tap board for a craft beer bar" width="100%"></a>
 </p>
 
 <p align="center">
