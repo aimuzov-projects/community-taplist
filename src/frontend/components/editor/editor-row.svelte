@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { Item } from '#shared/types.ts'
+	import { isEmptyItem, type Item } from '#shared/types.ts'
 
 	import Cover from './cover.svelte'
 	import { draggable, type OnDragDrop } from './draggable.ts'
@@ -17,7 +17,13 @@
 	} = $props()
 </script>
 
-<div class="editor-row" class:editor-row--changed={changed} use:draggable={onDragDrop} data-index={index}>
+<div
+	class="editor-row"
+	class:editor-row--changed={changed}
+	class:editor-row--empty={isEmptyItem(item)}
+	use:draggable={onDragDrop}
+	data-index={index}
+>
 	<div class="editor-row__number" title="Перетащите, чтобы поменять местами">
 		<svg class="editor-row__grip" viewBox="0 0 8 14" aria-hidden="true">
 			<circle cx="2" cy="2" r="1.2" /><circle cx="6" cy="2" r="1.2" />
@@ -127,6 +133,16 @@
 		&__input--number {
 			font-variant-numeric: tabular-nums;
 			text-align: right;
+		}
+	}
+
+	/* Свободный кран: без подложки, только контур, чтобы пустые места бросались в глаза. */
+	.editor-row--empty {
+		background: transparent;
+		box-shadow: inset 0 0 0 1px #2e2725;
+
+		& .editor-row__number {
+			color: #4a403b;
 		}
 	}
 

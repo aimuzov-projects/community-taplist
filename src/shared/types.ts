@@ -26,6 +26,11 @@ function isItem(value: unknown): value is Item {
 	return [alc, ibu, price04, price025].every(isString)
 }
 
+/** Кран без названия считается свободным: табло и редактор показывают его по-особому. */
+export function isEmptyItem(item: Item) {
+	return item.name.trim() === ''
+}
+
 export function isItemList(value: unknown): value is Item[] {
 	return Array.isArray(value) && value.every(isItem)
 }

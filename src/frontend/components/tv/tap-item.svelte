@@ -1,28 +1,43 @@
 <script lang="ts">
 	import type { TapItem } from '#shared/tv.ts'
+	import { isEmptyItem } from '#shared/types.ts'
 
 	let { item }: { item: TapItem } = $props()
 </script>
 
 <div class="tap-item">
-	<div class="tap-item__inner">
-		<div class="tap-item__cover" style:background-image="url({item.cover})">
-			<div class="tap-item__number">{item.number || '?'}</div>
-		</div>
-
-		<div class="tap-item__name"><div class="tap-item__name-text">{item.name}</div></div>
-		<div class="tap-item__origin">{[item.brewery, item.style].filter(Boolean).join(' • ')}</div>
-
-		<div class="tap-item__meta">
-			<div class="tap-item__strength">
-				IBU {item.attrs.ibu || '---'}<br /> ALC {item.attrs.alc || '---'}
+	{#if isEmptyItem(item)}
+		<div class="tap-item__inner tap-item__inner--empty">
+			<div class="tap-item__cover tap-item__cover--empty">
+				<div class="tap-item__number tap-item__number--empty">{item.number}</div>
 			</div>
-			<div class="tap-item__price">0,4<br /> <span class="tap-item__price-value">{item.attrs.price04}</span></div>
-			<div class="tap-item__price">
-				0,25<br /> <span class="tap-item__price-value">{item.attrs.price025}</span>
+			<div class="tap-item__name">
+				<div class="tap-item__name-text tap-item__name-text--empty">Скоро новое</div>
+			</div>
+			<div class="tap-item__origin">Кран ждёт следующую кегу</div>
+		</div>
+	{:else}
+		<div class="tap-item__inner">
+			<div class="tap-item__cover" style:background-image="url({item.cover})">
+				<div class="tap-item__number">{item.number || '?'}</div>
+			</div>
+
+			<div class="tap-item__name"><div class="tap-item__name-text">{item.name}</div></div>
+			<div class="tap-item__origin">{[item.brewery, item.style].filter(Boolean).join(' • ')}</div>
+
+			<div class="tap-item__meta">
+				<div class="tap-item__strength">
+					IBU {item.attrs.ibu || '---'}<br /> ALC {item.attrs.alc || '---'}
+				</div>
+				<div class="tap-item__price">
+					0,4<br /> <span class="tap-item__price-value">{item.attrs.price04}</span>
+				</div>
+				<div class="tap-item__price">
+					0,25<br /> <span class="tap-item__price-value">{item.attrs.price025}</span>
+				</div>
 			</div>
 		</div>
-	</div>
+	{/if}
 </div>
 
 <style>
@@ -127,5 +142,30 @@
 			font-weight: 700;
 			color: #d1d1d1;
 		}
+	}
+
+	/* Свободный кран: место видно, но не спорит с налитыми. */
+	.tap-item__inner--empty {
+		background-color: #171313;
+	}
+
+	.tap-item__cover--empty {
+		border: 3rem dashed #3a3230;
+		background: none;
+	}
+
+	.tap-item__number--empty {
+		width: 194rem;
+		height: 244rem;
+		line-height: 244rem;
+		-webkit-text-stroke-color: #4a403b;
+		text-shadow: none;
+		background: none;
+	}
+
+	.tap-item__name-text--empty {
+		height: auto;
+		font-weight: 400;
+		color: #7e7c7c;
 	}
 </style>
