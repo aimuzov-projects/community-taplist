@@ -1,0 +1,25 @@
+/* Табло рассчитано на 1920×1080: 1rem -- пиксель макета. */
+
+html,
+body {
+	user-select: none;
+	overflow: hidden;
+	background-color: #131111;
+}
+
+/* Ступени для браузеров без min(), webOS 5 его не знает. */
+html {
+	font-size: 1px;
+}
+
+@media (max-width: 1919px) {
+	html {
+		font-size: 0.666666667px;
+	}
+}
+
+@supports (font-size: min(1px, 2px)) {
+	html {
+		font-size: min(100vw / 1920, 100vh / 1080);
+	}
+}

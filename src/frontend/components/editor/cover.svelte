@@ -1,0 +1,95 @@
+<script lang="ts">
+	import Spinner from './spinner.svelte'
+
+	let { cover = $bindable() }: { cover: string } = $props()
+
+	let input: HTMLInputElement
+	let changing = $state(false)
+
+	// Обложки лежат в gist как data URL, поэтому держим их маленькими.
+	const COVER_SIZE_MAX = 250
+	const COVER_QUALITY = 0.85
+
+	async function toDataUrl(file: File) {
+		const bitmap = await createImageBitmap(file)
+		const ratio = Math.min(1, COVER_SIZE_MAX / bitmap.width, COVER_SIZE_MAX / bitmap.height)
+
+		const canvas = document.createElement('canvas')
+
+		canvas.width = Math.round(bitmap.width * ratio)
+		canvas.height = Math.round(bitmap.height * ratio)
+		canvas.getContext('2d')?.drawImage(bitmap, 0, 0, canvas.width, canvas.height)
+		bitmap.close()
+
+		return canvas.toDataURL('image/jpeg', COVER_QUALITY)
+	}
+
+	function change(event: Event & { currentTarget: HTMLInputElement }) {
+		const file = event.currentTarget.files?.[0]
+
+		if (!file) return
+
+		changing = true
+
+		toDataUrl(file)
+			.then((url) => (cover = url))
+			.catch((error) => alert(`Не удалось обработать картинку: ${error}`))
+			.finally(() => (changing = false))
+	}
+</script>
+
+<button class="cover" type="button" onclick={() => input.click()} style:background-image="url({cover})">
+	<input class="cover__input" type="file" accept=".jpg, .jpeg, .png" onchange={change} bind:this={input} />
+	<img class="cover__preview" src={cover} alt="" />
+
+	{#if changing}
+		<div class="cover__loading">
+			<Spinner />
+		</div>
+	{/if}
+</button>
+
+<style>
+	.cover {
+		cursor: pointer;
+		position: relative;
+		display: block;
+		width: 50px;
+		height: 50px;
+		padding: 0;
+		border: none;
+		background-size: cover;
+
+		&:hover .cover__preview {
+			opacity: 1;
+		}
+
+		&__input {
+			display: none;
+		}
+
+		&__preview {
+			pointer-events: none;
+			position: absolute;
+			z-index: 1;
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%, -50%);
+			max-width: 200px;
+			max-height: 250px;
+			border: #fff 15px solid;
+			opacity: 0;
+			box-shadow: 0 0 24px rgb(0 0 0 / 50%);
+			transition: all 0.25s ease-out;
+		}
+
+		&__loading {
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			background: rgb(255 255 255 / 90%);
+		}
+	}
+</style>

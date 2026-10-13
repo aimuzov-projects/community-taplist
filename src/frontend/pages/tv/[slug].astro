@@ -1,0 +1,17 @@
+---
+import TapBoard from '#frontend/components/tv/tap-board.svelte'
+import Base from '#frontend/layouts/base.astro'
+import { TV_COUNT } from '#shared/constants.ts'
+import '#frontend/styles/tv.css'
+
+// Экраны известны заранее, остальные адреса отдаёт 404.html.
+export function getStaticPaths() {
+	return Array.from({ length: TV_COUNT }, (_, index) => ({ params: { slug: String(index + 1) } }))
+}
+
+const tv = Number(Astro.params.slug)
+---
+
+<Base title={`Экран ${tv}`}>
+	<TapBoard {tv} client:load />
+</Base>
