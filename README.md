@@ -1,100 +1,69 @@
-# Community Tap List
+<p align="center">
+	<a href="https://github.com/aimuzov-projects/community-taplist/actions/workflows/deploy.yml"><img src="https://img.shields.io/github/actions/workflow/status/aimuzov-projects/community-taplist/deploy.yml?branch=main&label=deploy" alt="Deploy"></a>
+	<a href="https://taplist.aimuzov.online"><img src="https://img.shields.io/website?url=https%3A%2F%2Ftaplist.aimuzov.online&label=site" alt="Site status"></a>
+	<a href="package.json"><img src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Faimuzov-projects%2Fcommunity-taplist%2Fmain%2Fpackage.json&query=%24.engines.node&label=node&logo=nodedotjs&logoColor=white&color=5fa04e" alt="Node"></a>
+	<a href="https://astro.build"><img src="https://img.shields.io/github/package-json/dependency-version/aimuzov-projects/community-taplist/dev/astro?logo=astro&logoColor=white&color=bc52ee" alt="Astro"></a>
+	<a href="https://svelte.dev"><img src="https://img.shields.io/github/package-json/dependency-version/aimuzov-projects/community-taplist/dev/svelte?logo=svelte&logoColor=white&color=ff3e00" alt="Svelte"></a>
+	<a href="LICENSE"><img src="https://img.shields.io/github/license/aimuzov-projects/community-taplist" alt="License"></a>
+</p>
 
-[Русская версия](README.ru.md)
+<p align="center"><b>English</b> · <a href="README.ru.md">Русский</a></p>
 
-A digital tap list for a craft beer bar. Two TV screens show what is on tap, bar staff update the
-list from a password-protected web editor, and the data lives in a GitHub Gist -- no database
-required.
+A digital tap list for a craft beer bar: [taplist.aimuzov.online](https://taplist.aimuzov.online). Two TVs show what is on tap, bartenders edit the list in a password-protected web editor, and the list itself lives in a GitHub Gist, so there is no database.
 
-## Features
+A static [Astro](https://astro.build) site with Svelte islands plus a small dependency-free Node API (`src/backend/`) that reads and writes the gist and keeps the list in memory, so the TVs never hit GitHub rate limits.
 
-- **Home** (`/`) -- pick a screen with the remote: left and right to choose, OK to open.
-- **TV screens** (`/tv/1`, `/tv/2`) -- a 1920×1080 board with 12 taps per screen. RETURN on the
-  remote goes back home. The board picks up changes in place, without reloading the page. A 25th tap
-  alternates with the last slot of the second screen.
-- **Editor** (`/editor`) -- edit names, breweries, styles, IBU, ABV and prices, reorder taps with
-  drag and drop, upload a cover image (resized in the browser to 250 px and stored inline).
-- **Storage** -- a single JSON file in a GitHub Gist, optionally cached in memory.
+## What's inside
 
-## Quick start
+- **Screen picker** (`/`): left/right on the remote to choose, OK to open.
+- **Boards** (`/tv/1`, `/tv/2`): 1920×1080, 12 taps per screen. RETURN goes back to the picker. Boards pick up a fresh list in place, without a reload, and reload once after a deploy. The 25th tap alternates with the last slot of the second screen.
+- **Editor** (`/editor`): names, breweries, styles, IBU, ABV and prices, drag-and-drop reordering, covers (shrunk in the browser to 250 px and stored in the gist itself).
+- **API**: `GET /api/items` for the boards, `PUT /api/items` for the editor, `GET /api/health`.
 
-Requires Node.js 22+.
+## Running
 
-```bash
-npm install
-npm run dev
+Requires Node 26.11.1, the same version is pinned in `package.json` and the Dockerfile.
+
+```sh
+cp .env.example .env   # may stay empty: the API serves a sample tap list
+npm ci
+npm run dev            # site, /api is proxied to localhost:8787
+npm run api            # API
 ```
 
-Open <http://localhost:5173>. Without a GitHub token the app runs on built-in sample data
-kept in memory. To open the editor locally, create `.env` with an editor password:
+Before committing:
 
-```bash
-echo 'PRIVATE_EDITOR_SECRET=admin:admin' > .env
+```sh
+npm run format:check && npm run lint:js && npm run lint:css && npm run check && npm test
 ```
 
-## Configuration
+### Gist
 
-Copy [`.env.example`](.env.example) to `.env` and fill it in.
+1. Create a secret gist with a file such as `taplist.json` containing `{ "record": [] }`.
+2. Create a [fine-grained token](https://github.com/settings/personal-access-tokens/new) with only **Gists: Read and write**.
+3. Put the token, the gist ID (the end of its URL) and the file name into `.env`, see [`.env.example`](.env.example).
 
-| Variable                       | Description                                                                          |
-| ------------------------------ | ------------------------------------------------------------------------------------ |
-| `PRIVATE_EDITOR_SECRET`        | Editor credentials as `user:password`. The editor stays locked while it is empty.    |
-| `PRIVATE_GITHUB_API_TOKEN`     | GitHub token with access to gists only. Empty in development means sample data.      |
-| `PRIVATE_GITHUB_GIST_ID`       | ID of the gist that stores the list.                                                 |
-| `PRIVATE_GITHUB_GIST_FILENAME` | File name inside the gist, e.g. `taplist.json`.                                      |
-| `PRIVATE_CACHE`                | `1` -- read the gist once and keep it in memory; otherwise read it on every request. |
-| `PUBLIC_DATA_UPDATE_INTERVAL`  | How often TV screens fetch fresh data, in milliseconds (default `60000`).            |
-| `ORIGIN`                       | Public URL of the app, needed in production behind a reverse proxy.                  |
+The editor overwrites the whole file. With `CACHE=1`, edits made directly in the gist show up only after the API restarts.
 
-### Setting up the gist
+## TVs
 
-1. Create a secret gist at <https://gist.github.com> with a file such as `taplist.json`:
-   ```json
-   { "record": [] }
-   ```
-2. Create a [fine-grained token](https://github.com/settings/personal-access-tokens/new) with
-   **Account permissions => Gists: Read and write** and nothing else.
-3. Put the token, the gist ID (the last part of the gist URL) and the file name into `.env`.
+The boards run in the LG webOS 5 browser, which is Chromium 68. Hence:
 
-The editor overwrites the whole file on save. With `PRIVATE_CACHE=1` edits made directly in the
-gist show up only after a restart.
+- the client build lowers syntax to `chrome68` (the `client-target` plugin in `astro.config.mjs`: Astro itself forces `esnext` on the client);
+- `globalThis`, `queueMicrotask` and `String.prototype.replaceAll`, missing there, are polyfilled by an inline script in `src/frontend/layouts/base.astro`;
+- no flex `gap`, no `min()` outside `@supports`, no `Array.prototype.at` or other post-2019 APIs in browser code.
+
+Check the bundle after a build: `npx es-check es2019 'dist/_astro/*.js' --module`.
+
+## Content Security Policy
+
+The build puts a CSP with hashes of Astro scripts and styles into every page (`security.csp` in `astro.config.mjs`). `npm run dev` has no policy, so violations only show up in `npm run build && npm run preview` and in production. Images are allowed from any `https:` origin because covers may link to external hosts.
 
 ## Deployment
 
-The app is built with `@sveltejs/adapter-node` and ships as a Docker image:
+A push to `main` runs GitHub Actions: checks first, then SSH into the `projects` server. There the key is bound to [`deploy/remote.sh`](deploy/remote.sh), which pulls `main` and rebuilds the containers from [`deploy/docker-compose.yml`](deploy/docker-compose.yml): nginx with the static site and the API. The domain, TLS and the editor password (`basic_auth` on `/editor` and `PUT /api/items`) are handled by the shared Caddy from `aimuzov-projects/infra-server`. `.env` lives on the server in `/srv/community-taplist`.
 
-```bash
-cp .env.example .env   # fill it in
-docker compose up -d --build
-```
-
-The app listens on port 3000. See [docs/deploy.md](docs/deploy.md) for running it behind a
-reverse proxy.
-
-## Development
-
-```bash
-npm run dev      # dev server
-npm run check    # type check
-npm run lint     # prettier + eslint
-npm run format   # apply prettier
-npm run build    # production build into build/
-```
-
-## Project structure
-
-```
-src/
-├── hooks.server.ts        # Basic Auth for /editor
-├── lib/
-│   ├── server/store.ts    # gist storage and cache
-│   ├── tv.ts              # splitting taps into screens and columns
-│   ├── types.ts           # data types and validation
-│   └── mock.ts            # sample data for development
-└── routes/
-    ├── editor/            # editor page and save endpoint
-    └── tv/[slug]/         # TV screens
-```
+To roll back, `git revert` the bad commit on `main` and push. `remote.sh` runs compose with `--remove-orphans`, so containers the previous version did not have go away on their own.
 
 ## License
 

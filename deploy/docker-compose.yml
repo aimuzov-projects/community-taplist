@@ -1,0 +1,55 @@
+# Таплист на сервере projects. Порты 80/443 держит общий Caddy
+# из aimuzov-projects/infra-server: он проксирует домен сюда по сети edge,
+# а /api/* -- сервису API. Там же Caddy проверяет пароль редактора.
+
+name: community-taplist
+
+x-logging: &logging
+  driver: json-file
+  options:
+    max-size: '5m'
+    max-file: '2'
+
+services:
+  site:
+    build:
+      context: ..
+      dockerfile: deploy/frontend.Dockerfile
+      secrets: [env]
+    image: community-taplist
+    container_name: community-taplist
+    restart: unless-stopped
+    networks:
+      - edge
+    logging: *logging
+
+  # Токен и gist лежат в /srv/community-taplist/.env, образец в .env.example.
+  # VPN не нужен: api.github.com отвечает из РФ.
+  api:
+    build:
+      context: ..
+      dockerfile: deploy/backend.Dockerfile
+    image: community-taplist-api
+    container_name: community-taplist-api
+    restart: unless-stopped
+    env_file: ../.env
+    # Весь список с обложками держится в памяти, этого хватает с запасом.
+    mem_limit: 160m
+    healthcheck:
+      test: ['CMD', 'wget', '-qO-', 'http://127.0.0.1:8787/api/health']
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    networks:
+      - edge
+    logging: *logging
+
+secrets:
+  env:
+    file: ../.env
+
+networks:
+  edge:
+    name: edge
+    external: true

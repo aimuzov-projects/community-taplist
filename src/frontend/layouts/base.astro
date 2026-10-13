@@ -1,0 +1,41 @@
+---
+import '@fontsource/arsenal/400.css'
+import '@fontsource/arsenal/700.css'
+import '@fontsource/blinker/700.css'
+import '#frontend/styles/global.css'
+
+type Props = {
+	title: string
+}
+
+const { title } = Astro.props
+---
+
+<!doctype html>
+<html lang="ru">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="robots" content="noindex" />
+		<title>{title}</title>
+		<link rel="icon" type="image/png" href="/favicon.png" />
+		<!-- Браузер LG webOS 5 -- Chromium 68. Синтаксис сборка опускает сама, а этих API
+		     рантайма Svelte в нём нет. replaceAll Svelte зовёт со строкой или с /g-регуляркой. -->
+		<script is:inline>
+			if (typeof globalThis === 'undefined') window.globalThis = window
+			if (!window.queueMicrotask)
+				window.queueMicrotask = function (callback) {
+					Promise.resolve().then(callback)
+				}
+			if (!String.prototype.replaceAll)
+				String.prototype.replaceAll = function (pattern, replacement) {
+					if (pattern instanceof RegExp) return this.replace(pattern, replacement)
+					return this.split(pattern).join(replacement)
+				}
+		</script>
+		<slot name="head" />
+	</head>
+	<body>
+		<slot />
+	</body>
+</html>

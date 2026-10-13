@@ -1,99 +1,69 @@
-# Community Tap List
+<p align="center">
+	<a href="https://github.com/aimuzov-projects/community-taplist/actions/workflows/deploy.yml"><img src="https://img.shields.io/github/actions/workflow/status/aimuzov-projects/community-taplist/deploy.yml?branch=main&label=deploy" alt="Deploy"></a>
+	<a href="https://taplist.aimuzov.online"><img src="https://img.shields.io/website?url=https%3A%2F%2Ftaplist.aimuzov.online&label=site" alt="Site status"></a>
+	<a href="package.json"><img src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Faimuzov-projects%2Fcommunity-taplist%2Fmain%2Fpackage.json&query=%24.engines.node&label=node&logo=nodedotjs&logoColor=white&color=5fa04e" alt="Node"></a>
+	<a href="https://astro.build"><img src="https://img.shields.io/github/package-json/dependency-version/aimuzov-projects/community-taplist/dev/astro?logo=astro&logoColor=white&color=bc52ee" alt="Astro"></a>
+	<a href="https://svelte.dev"><img src="https://img.shields.io/github/package-json/dependency-version/aimuzov-projects/community-taplist/dev/svelte?logo=svelte&logoColor=white&color=ff3e00" alt="Svelte"></a>
+	<a href="LICENSE"><img src="https://img.shields.io/github/license/aimuzov-projects/community-taplist" alt="License"></a>
+</p>
 
-[English version](README.md)
+<p align="center"><a href="README.md">English</a> · <b>Русский</b></p>
 
-Электронный таплист для крафтового бара. Два телевизора показывают, что сейчас на кранах, бармены
-обновляют список в веб-редакторе под паролем, а сам список лежит в GitHub Gist -- база не нужна.
+Электронный таплист крафтового бара: [taplist.aimuzov.online](https://taplist.aimuzov.online). Два телевизора показывают, что сейчас на кранах, бармены правят список в веб-редакторе под паролем, а сам список лежит в GitHub Gist -- база не нужна.
 
-## Возможности
+Статичный сайт на [Astro](https://astro.build) с островами на Svelte и маленький API (`src/backend/`) на Node без зависимостей: он читает и пишет gist и держит список в памяти, чтобы табло не упирались в лимиты GitHub.
 
-- **Главная** (`/`) -- выбор экрана с пульта: влево-вправо выбрать, OK открыть.
-- **ТВ-экраны** (`/tv/1`, `/tv/2`) -- табло 1920×1080 на 12 кранов. RETURN на пульте возвращает на
-  главную. Изменения табло подхватывает на месте, без перезагрузки страницы. 25-й кран
-  чередуется с последней позицией второго экрана.
-- **Редактор** (`/editor`) -- названия, пивоварни, стили, IBU, крепость и цены, перестановка кранов
-  перетаскиванием, загрузка обложки (сжимается в браузере до 250 px и хранится прямо в gist).
-- **Хранилище** -- один JSON-файл в GitHub Gist, опционально с кэшем в памяти.
+## Что внутри
 
-## Быстрый старт
+- **Выбор экрана** (`/`) -- с пульта: влево-вправо выбрать, OK открыть.
+- **Табло** (`/tv/1`, `/tv/2`) -- 1920×1080, 12 кранов на экран. RETURN на пульте возвращает к выбору. Свежий список табло забирает на месте, без перезагрузки, а после деплоя один раз перезагружается само. 25-й кран чередуется с последним местом второго экрана.
+- **Редактор** (`/editor`) -- названия, пивоварни, стили, IBU, крепость и цены, перестановка перетаскиванием, обложки (сжимаются в браузере до 250 px и хранятся прямо в gist).
+- **API** -- `GET /api/items` для табло, `PUT /api/items` для редактора, `GET /api/health`.
 
-Нужен Node.js 22+.
+## Запуск
 
-```bash
-npm install
-npm run dev
+Нужен Node 26.11.1, эта же версия закреплена в `package.json` и в Dockerfile.
+
+```sh
+cp .env.example .env   # можно оставить пустым: API отдаст пример таплиста
+npm ci
+npm run dev            # сайт, /api проксируется на localhost:8787
+npm run api            # API
 ```
 
-Откройте <http://localhost:5173>. Без GitHub-токена приложение работает на встроенных
-тестовых данных в памяти. Чтобы открыть редактор локально, задайте пароль в `.env`:
+Перед коммитом:
 
-```bash
-echo 'PRIVATE_EDITOR_SECRET=admin:admin' > .env
+```sh
+npm run format:check && npm run lint:js && npm run lint:css && npm run check && npm test
 ```
 
-## Настройка
+### Gist
 
-Скопируйте [`.env.example`](.env.example) в `.env` и заполните.
+1. Создайте секретный gist с файлом, например `taplist.json`, и содержимым `{ "record": [] }`.
+2. Создайте [fine-grained токен](https://github.com/settings/personal-access-tokens/new) только с правом **Gists: Read and write**.
+3. Пропишите в `.env` токен, ID gist (конец его адреса) и имя файла, см. [`.env.example`](.env.example).
 
-| Переменная                     | Описание                                                                               |
-| ------------------------------ | -------------------------------------------------------------------------------------- |
-| `PRIVATE_EDITOR_SECRET`        | Логин и пароль редактора в виде `user:password`. Пока пусто -- редактор закрыт.        |
-| `PRIVATE_GITHUB_API_TOKEN`     | GitHub-токен с доступом только к gist. Пусто в dev -- тестовые данные.                 |
-| `PRIVATE_GITHUB_GIST_ID`       | ID gist со списком.                                                                    |
-| `PRIVATE_GITHUB_GIST_FILENAME` | Имя файла в gist, например `taplist.json`.                                             |
-| `PRIVATE_CACHE`                | `1` -- прочитать gist один раз и держать в памяти; иначе читать на каждый запрос.      |
-| `PUBLIC_DATA_UPDATE_INTERVAL`  | Как часто ТВ-экраны запрашивают свежие данные, в миллисекундах (по умолчанию `60000`). |
-| `ORIGIN`                       | Публичный URL приложения, нужен в проде за reverse proxy.                              |
+Редактор перезаписывает файл целиком. С `CACHE=1` правки, сделанные прямо в gist, появятся только после перезапуска API.
 
-### Настройка gist
+## Телевизоры
 
-1. Создайте секретный gist на <https://gist.github.com> с файлом, например `taplist.json`:
-   ```json
-   { "record": [] }
-   ```
-2. Создайте [fine-grained токен](https://github.com/settings/personal-access-tokens/new) с правом
-   **Account permissions => Gists: Read and write** и ничем больше.
-3. Пропишите токен, ID gist (последняя часть его URL) и имя файла в `.env`.
+Табло открывается в браузере LG webOS 5, это Chromium 68. Поэтому:
 
-Редактор при сохранении перезаписывает файл целиком. С `PRIVATE_CACHE=1` правки, сделанные прямо
-в gist, появятся только после перезапуска.
+- клиентская сборка опускает синтаксис до `chrome68` (плагин `client-target` в `astro.config.mjs`: сам Astro ставит клиенту `esnext`);
+- `globalThis`, `queueMicrotask` и `String.prototype.replaceAll`, которых в нём нет, подставляет инлайн-скрипт в `src/frontend/layouts/base.astro`;
+- в CSS без `gap` у flex и без `min()` вне `@supports`, без `Array.prototype.at` и прочего новее 2019 года в коде, который попадает в браузер.
 
-## Деплой
+Проверка бандла после сборки: `npx es-check es2019 'dist/_astro/*.js' --module`.
 
-Приложение собирается через `@sveltejs/adapter-node` и поставляется Docker-образом:
+## Content Security Policy
 
-```bash
-cp .env.example .env   # заполнить
-docker compose up -d --build
-```
+Сборка кладёт в каждую страницу CSP с хешами скриптов и стилей Astro (`security.csp` в `astro.config.mjs`). В `npm run dev` политики нет, нарушения видны только в `npm run build && npm run preview` и на проде. Картинки разрешены с любого `https:`: обложки бывают ссылками на внешние сервисы.
 
-Приложение слушает порт 3000. Как запустить его за reverse proxy -- в
-[docs/deploy.ru.md](docs/deploy.ru.md).
+## Выкладка
 
-## Разработка
+Пуш в `main` запускает GitHub Actions: сначала проверки, затем вход по SSH на сервер `projects`. Там ключ привязан к [`deploy/remote.sh`](deploy/remote.sh), который подтягивает `main` и пересобирает контейнеры из [`deploy/docker-compose.yml`](deploy/docker-compose.yml): nginx со статикой и API. Домен, TLS и пароль редактора (`basic_auth` на `/editor` и `PUT /api/items`) держит общий Caddy из `aimuzov-projects/infra-server`. `.env` лежит на сервере в `/srv/community-taplist`.
 
-```bash
-npm run dev      # dev-сервер
-npm run check    # проверка типов
-npm run lint     # prettier + eslint
-npm run format   # применить prettier
-npm run build    # прод-сборка в build/
-```
-
-## Структура проекта
-
-```
-src/
-├── hooks.server.ts        # Basic Auth для /editor
-├── lib/
-│   ├── server/store.ts    # хранилище в gist и кэш
-│   ├── tv.ts              # раскладка кранов по экранам и колонкам
-│   ├── types.ts           # типы данных и валидация
-│   └── mock.ts            # тестовые данные для разработки
-└── routes/
-    ├── editor/            # страница редактора и эндпоинт сохранения
-    └── tv/[slug]/         # ТВ-экраны
-```
+Откатить выкладку -- значит сделать `git revert` плохого коммита в `main` и запушить. `remote.sh` поднимает compose с `--remove-orphans`, так что контейнеры, которых в прежней версии не было, уходят сами.
 
 ## Лицензия
 
