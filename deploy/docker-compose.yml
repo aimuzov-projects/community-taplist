@@ -1,0 +1,37 @@
+# Таплист на сервере projects. Порты 80/443 держит общий Caddy
+# из aimuzov-projects/infra-server: он проксирует домен сюда по сети edge
+# и спрашивает пароль редактора тот же, что и само приложение.
+
+name: community-taplist
+
+x-logging: &logging
+  driver: json-file
+  options:
+    max-size: '5m'
+    max-file: '2'
+
+services:
+  site:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
+    image: community-taplist
+    container_name: community-taplist
+    restart: unless-stopped
+    # Переменные лежат в /srv/community-taplist/.env, образец в .env.example.
+    env_file: ../.env
+    environment:
+      # Caddy ходит на community-taplist:80 -- тот же адрес, что у следующих версий сайта.
+      PORT: '80'
+      ORIGIN: https://taplist.aimuzov.online
+      NODE_OPTIONS: --max-old-space-size=96
+    # Приложению хватает ~100 МБ, лимит не даёт ему отъесть память у соседей.
+    mem_limit: 160m
+    networks:
+      - edge
+    logging: *logging
+
+networks:
+  edge:
+    name: edge
+    external: true

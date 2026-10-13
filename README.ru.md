@@ -60,14 +60,8 @@ echo 'PRIVATE_EDITOR_SECRET=admin:admin' > .env
 
 ## Деплой
 
-Приложение собирается через `@sveltejs/adapter-node` и поставляется Docker-образом:
-
-```bash
-cp .env.example .env   # заполнить
-docker compose up -d --build
-```
-
-Приложение слушает порт 3000. Как запустить его за reverse proxy -- в
+Приложение собирается через `@sveltejs/adapter-node` в Docker-образ и живёт на сервере `projects`
+за общим Caddy. Пуш в `main` выкатывает его через GitHub Actions, подробности и откат -- в
 [docs/deploy.ru.md](docs/deploy.ru.md).
 
 ## Разработка

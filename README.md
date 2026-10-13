@@ -61,15 +61,9 @@ gist show up only after a restart.
 
 ## Deployment
 
-The app is built with `@sveltejs/adapter-node` and ships as a Docker image:
-
-```bash
-cp .env.example .env   # fill it in
-docker compose up -d --build
-```
-
-The app listens on port 3000. See [docs/deploy.md](docs/deploy.md) for running it behind a
-reverse proxy.
+The app is built with `@sveltejs/adapter-node` into a Docker image and runs on the `projects`
+server behind the shared Caddy. A push to `main` deploys it via GitHub Actions, see
+[docs/deploy.md](docs/deploy.md) for details and rollback.
 
 ## Development
 

@@ -2,64 +2,39 @@
 
 [Русская версия](deploy.ru.md)
 
-## Docker Compose
+## The projects server
 
-```bash
-cp .env.example .env   # fill it in, including ORIGIN
-docker compose up -d --build
-```
+The app lives on the `projects` server in `/srv/community-taplist`. Ports 80/443, TLS and the
+`taplist.aimuzov.online` domain are handled by the shared Caddy from `aimuzov-projects/infra-server`,
+which reaches the `community-taplist:80` container over the `edge` network. Caddy asks for the same
+`/editor` password as `PRIVATE_EDITOR_SECRET`, so the browser prompts only once.
 
-The image is built for `linux/amd64`. The build stage runs natively on the host, so building on
-Apple Silicon is fast; only the final image targets the server platform.
+A push to `main` runs GitHub Actions: checks, then SSH into the server. The key from the
+`DEPLOY_SSH_KEY` secret is bound to [`deploy/remote.sh`](../deploy/remote.sh), which pulls `main`
+and rebuilds the container from [`deploy/docker-compose.yml`](../deploy/docker-compose.yml). To
+redeploy without a push: `gh workflow run deploy.yml`.
 
-The container is limited to 160 MB of memory (`mem_limit`) and the Node heap to 96 MB, which is
-enough for the app and keeps it from starving other services on a small VPS.
+`.env` lives on the server next to the repository, see [`.env.example`](../.env.example). `PORT`
+and `ORIGIN` are set by compose.
 
-The image raises adapter-node's `BODY_SIZE_LIMIT` to 16 MB: the editor saves the whole list with
-covers inlined, which does not fit the default 512 KB. Override it in `.env` if needed.
+## Rollback
 
-## Behind a reverse proxy
+To roll back, `git revert` the bad commit on `main` and push: Actions build the previous version
+the same way.
 
-By default compose publishes port 3000 (override it with `PORT` in the shell environment). When a
-reverse proxy runs in Docker on the same host, it is cleaner to skip publishing the port and
-connect the containers through a shared network. Put host-specific settings into
-`docker-compose.override.yml` next to `docker-compose.yml` -- compose picks it up automatically and
-git ignores it:
+## Memory
 
-```yaml
-services:
-  taplist:
-    ports: !reset []
-    networks:
-      - edge
+The container is capped at 160 MB (`mem_limit`) with a 96 MB Node heap. That is enough for the app
+and keeps it from starving neighbouring projects.
 
-networks:
-  edge:
-    external: true
-```
+The image raises the adapter-node `BODY_SIZE_LIMIT` to 16 MB: the editor saves the whole list with
+covers, which does not fit into the default 512 KB.
 
-```bash
-docker network create edge   # once
-docker compose up -d --build
-```
+## TVs
 
-Caddy example (the proxy container must also be in the `edge` network):
+Open `https://taplist.aimuzov.online` in the TV browser in full screen and pick a screen with the
+remote, RETURN goes back. The layout targets 1920×1080 and scales down to 1280×720. Boards fetch
+fresh data every `PUBLIC_DATA_UPDATE_INTERVAL` milliseconds and reload once after a new deploy.
 
-```caddyfile
-taplist.example.com {
-	reverse_proxy taplist:3000
-}
-```
-
-Set `ORIGIN` in `.env` to the public URL, e.g. `ORIGIN=https://taplist.example.com`: behind a
-proxy adapter-node cannot tell the public protocol and host on its own.
-
-## TV setup
-
-Open `https://<host>` in the TV browser in full-screen mode and pick a screen with the remote,
-RETURN brings you back. The layout is designed for 1920×1080 and scales down for 1280×720.
-The board fetches fresh data every `PUBLIC_DATA_UPDATE_INTERVAL` milliseconds and reloads
-itself once after a new deploy.
-
-The client bundle targets Chromium 68 (LG webOS 5). Older TVs still show the board, but without
-remote navigation and live updates.
+The client bundle targets Chromium 68 (LG webOS 5). Older TVs show the board, but without remote
+navigation or data updates.
