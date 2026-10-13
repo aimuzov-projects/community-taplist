@@ -83,6 +83,10 @@ A push to `main` runs GitHub Actions: checks first, then SSH into the `projects`
 
 To roll back, `git revert` the bad commit on `main` and push. `remote.sh` runs compose with `--remove-orphans`, so containers the previous version did not have go away on their own.
 
+## Acknowledgements
+
+Thanks to [Sophiya Bezruk](https://t.me/sabezruk) for helping with the project, especially with the design.
+
 ## License
 
 [MIT](LICENSE)

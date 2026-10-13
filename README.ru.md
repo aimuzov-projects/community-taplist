@@ -83,6 +83,10 @@ ssh projects 'docker exec community-taplist-api cp /data/history/<версия>.
 
 Откатить выкладку -- значит сделать `git revert` плохого коммита в `main` и запушить. `remote.sh` поднимает compose с `--remove-orphans`, так что контейнеры, которых в прежней версии не было, уходят сами.
 
+## Благодарности
+
+Спасибо [Софье Безрук](https://t.me/sabezruk) за помощь с проектом, особенно с дизайном.
+
 ## Лицензия
 
 [MIT](LICENSE)
