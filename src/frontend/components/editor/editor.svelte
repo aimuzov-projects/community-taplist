@@ -101,6 +101,7 @@
 			<span class="editor__logo"><Beer size={28} /></span>
 			<span class="editor__title">Таплист</span>
 			<span class="editor__subtitle">редактор</span>
+			<span class="editor__version">v{import.meta.env.APP_VERSION}</span>
 		</div>
 
 		<p
@@ -238,6 +239,11 @@
 			color: var(--accent);
 			text-transform: uppercase;
 			letter-spacing: 0.2em;
+		}
+
+		&__version {
+			font-size: 13px;
+			color: var(--muted);
 		}
 
 		&__status {

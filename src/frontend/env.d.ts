@@ -3,6 +3,8 @@
 interface ImportMetaEnv {
 	/** Метка сборки из astro.config.mjs. */
 	readonly BUILD_VERSION: string
+	/** Release version from package.json, shown in the editor. */
+	readonly APP_VERSION: string
 	/** Как часто табло забирает свежий список, в миллисекундах. */
 	readonly PUBLIC_DATA_UPDATE_INTERVAL?: string
 }

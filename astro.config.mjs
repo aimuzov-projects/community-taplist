@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs'
 import { writeFile } from 'node:fs/promises'
 import svelte from '@astrojs/svelte'
 import { defineConfig } from 'astro/config'
@@ -6,6 +7,8 @@ const proxy = { '/api': 'http://localhost:8787' }
 
 // Метка сборки: табло сверяет её с /version.json и перезагружается после деплоя.
 const version = Date.now().toString(36)
+
+const { version: appVersion } = JSON.parse(readFileSync(new URL('package.json', import.meta.url), 'utf8'))
 
 /** @type {import('astro').AstroIntegration} */
 const buildVersion = {
@@ -36,7 +39,10 @@ export default defineConfig({
 	build: { inlineStylesheets: 'always' },
 	integrations: [svelte(), buildVersion],
 	vite: {
-		define: { 'import.meta.env.BUILD_VERSION': JSON.stringify(version) },
+		define: {
+			'import.meta.env.BUILD_VERSION': JSON.stringify(version),
+			'import.meta.env.APP_VERSION': JSON.stringify(appVersion),
+		},
 		plugins: [clientTarget],
 		// На проде /api отдаёт Caddy сервису API, локально его роль играет прокси Vite.
 		server: { proxy },
