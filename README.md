@@ -11,10 +11,7 @@
 	<a href="LICENSE"><img src="https://img.shields.io/github/license/aimuzov-projects/community-taplist" alt="License"></a>
 </p>
 
-<p align="center">
-	<img src="https://img.shields.io/badge/English-e0a458" alt="English">
-	<a href="README.ru.md"><img src="https://img.shields.io/badge/%D0%A0%D1%83%D1%81%D1%81%D0%BA%D0%B8%D0%B9-555" alt="Русский"></a>
-</p>
+> **English** · [Русский](README.ru.md)
 
 A digital tap list for a craft beer bar: [taplist.aimuzov.online](https://taplist.aimuzov.online). Two TVs show what is on tap, bartenders edit the list in a password-protected web editor, and the list itself lives in a GitHub Gist, so there is no database.
 

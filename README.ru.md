@@ -11,10 +11,7 @@
 	<a href="LICENSE"><img src="https://img.shields.io/github/license/aimuzov-projects/community-taplist" alt="License"></a>
 </p>
 
-<p align="center">
-	<a href="README.md"><img src="https://img.shields.io/badge/English-555" alt="English"></a>
-	<img src="https://img.shields.io/badge/%D0%A0%D1%83%D1%81%D1%81%D0%BA%D0%B8%D0%B9-e0a458" alt="Русский">
-</p>
+> [English](README.md) · **Русский**
 
 Электронный таплист крафтового бара: [taplist.aimuzov.online](https://taplist.aimuzov.online). Два телевизора показывают, что сейчас на кранах, бармены правят список в веб-редакторе под паролем, а сам список лежит в GitHub Gist -- база не нужна.
 
