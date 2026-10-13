@@ -1,72 +1,81 @@
 import assert from 'node:assert/strict'
-import { afterEach, beforeEach, mock, test } from 'node:test'
+import { mkdir, mkdtemp, readdir, readFile, writeFile } from 'node:fs/promises'
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
+import { afterEach, beforeEach, test } from 'node:test'
 
 import { mockItems } from '#shared/mock.ts'
 
-import { cacheReset, itemsGet, itemsPut } from './store.ts'
+import { cacheReset, HISTORY_LIMIT, itemsGet, itemsPut } from './store.ts'
 
-const record = mockItems.slice(0, 2)
 const env = { ...process.env }
+let dir: string
 
-beforeEach(() => {
+beforeEach(async () => {
 	cacheReset()
-	Object.assign(process.env, {
-		NODE_ENV: 'production',
-		GITHUB_API_TOKEN: 'token',
-		GITHUB_GIST_ID: 'gist',
-		GITHUB_GIST_FILENAME: 'taplist.json',
-		CACHE: '1',
-	})
+	dir = await mkdtemp(join(tmpdir(), 'taplist-'))
+	Object.assign(process.env, { NODE_ENV: 'production', DATA_DIR: dir })
 })
 
 afterEach(() => {
 	process.env = { ...env }
-	mock.restoreAll()
 })
 
-const json = (body: unknown) => new Response(JSON.stringify(body))
+const list = (count: number) => mockItems.slice(0, count)
+const history = async () => (await readdir(join(dir, 'history'))).sort()
 
-test('читает список из файла gist и кэширует его', async () => {
-	const fetch = mock.method(globalThis, 'fetch', async () =>
-		json({ files: { 'taplist.json': { content: JSON.stringify({ record }) } } }),
-	)
+test('читает список из файла и держит его в памяти', async () => {
+	await writeFile(join(dir, 'taplist.json'), JSON.stringify(list(2)))
 
-	assert.deepEqual(await itemsGet(), record)
-	assert.deepEqual(await itemsGet(), record)
-	assert.equal(fetch.mock.callCount(), 1)
-	assert.equal(fetch.mock.calls[0].arguments[0], 'https://api.github.com/gists/gist')
+	assert.deepEqual(await itemsGet(), list(2))
+	await writeFile(join(dir, 'taplist.json'), JSON.stringify(list(3)))
+	assert.deepEqual(await itemsGet(), list(2))
 })
 
-test('обрезанный файл дочитывает по raw_url', async () => {
-	const fetch = mock.method(globalThis, 'fetch', async (url: string) =>
-		url.endsWith('/raw')
-			? new Response(JSON.stringify({ record }))
-			: json({ files: { 'taplist.json': { truncated: true, raw_url: 'https://gist/raw' } } }),
-	)
-
-	assert.deepEqual(await itemsGet(), record)
-	assert.equal(fetch.mock.calls[1].arguments[0], 'https://gist/raw')
+test('на проде без файла -- ошибка, а не пустое табло', async () => {
+	await assert.rejects(itemsGet(), /Нет файла/)
 })
 
-test('нет файла в gist -- ошибка', async () => {
-	mock.method(globalThis, 'fetch', async () => json({ files: {} }))
-	await assert.rejects(itemsGet(), /нет файла/)
+test('вне прода без файла создаёт его из примера', async () => {
+	process.env.NODE_ENV = 'development'
+
+	assert.deepEqual(await itemsGet(), mockItems)
+	assert.deepEqual(JSON.parse(await readFile(join(dir, 'taplist.json'), 'utf8')), mockItems)
 })
 
-test('сохранение пишет весь список в gist и обновляет кэш', async () => {
-	const fetch = mock.method(globalThis, 'fetch', async () => json({}))
-
-	await itemsPut(record)
-	const [url, init] = fetch.mock.calls[0].arguments as [string, RequestInit]
-
-	assert.equal(url, 'https://api.github.com/gists/gist')
-	assert.equal(init.method, 'PATCH')
-	assert.deepEqual(JSON.parse(JSON.parse(String(init.body)).files['taplist.json'].content), { record })
-	assert.deepEqual(await itemsGet(), record)
-	assert.equal(fetch.mock.callCount(), 1)
+test('файл не со списком кранов -- ошибка', async () => {
+	await writeFile(join(dir, 'taplist.json'), '{"record": []}')
+	await assert.rejects(itemsGet(), /не список кранов/)
 })
 
-test('без токена в продакшне -- ошибка, а не пример', async () => {
-	delete process.env.GITHUB_API_TOKEN
-	await assert.rejects(itemsGet(), /GITHUB_API_TOKEN/)
+test('сохранение пишет файл, обновляет память и откладывает прошлую версию в историю', async () => {
+	await writeFile(join(dir, 'taplist.json'), JSON.stringify(list(2)))
+
+	await itemsPut(list(3))
+
+	assert.deepEqual(JSON.parse(await readFile(join(dir, 'taplist.json'), 'utf8')), list(3))
+	assert.deepEqual(await itemsGet(), list(3))
+	const [saved] = await history()
+	assert.deepEqual(JSON.parse(await readFile(join(dir, 'history', saved), 'utf8')), list(2))
+})
+
+test(`история хранит только ${HISTORY_LIMIT} последних версий`, async () => {
+	await writeFile(join(dir, 'taplist.json'), JSON.stringify(list(1)))
+	await mkdir(join(dir, 'history'))
+	for (let day = 1; day <= 5; day++) await writeFile(join(dir, 'history', `2000-01-0${day}.json`), '[]')
+
+	for (let i = 0; i < HISTORY_LIMIT; i++) await itemsPut(list(1))
+
+	const versions = await history()
+	assert.equal(versions.length, HISTORY_LIMIT)
+	assert.ok(!versions.includes('2000-01-01.json'))
+})
+
+test('одновременные сохранения идут по очереди, последнее побеждает', async () => {
+	await writeFile(join(dir, 'taplist.json'), JSON.stringify(list(1)))
+
+	await Promise.all([itemsPut(list(2)), itemsPut(list(3)), itemsPut(list(4))])
+
+	assert.deepEqual(JSON.parse(await readFile(join(dir, 'taplist.json'), 'utf8')), list(4))
+	assert.equal((await history()).length > 0, true)
 })

@@ -17,7 +17,7 @@
 </p>
 
 <h3 align="center">Электронный таплист крафтового бара</h3>
-<p align="center">Табло на телевизорах, редактор для барменов, список в GitHub Gist -- без базы данных</p>
+<p align="center">Табло на телевизорах, редактор для барменов, список в JSON-файле -- без базы данных</p>
 
 <table>
 	<tr>
@@ -26,13 +26,13 @@
 	</tr>
 </table>
 
-Живёт на [taplist.aimuzov.online](https://taplist.aimuzov.online). Статичный сайт на [Astro](https://astro.build) с островами на Svelte и маленький API (`src/backend/`) на Node без зависимостей: он читает и пишет gist и держит список в памяти, чтобы табло не упирались в лимиты GitHub.
+Живёт на [taplist.aimuzov.online](https://taplist.aimuzov.online). Статичный сайт на [Astro](https://astro.build) с островами на Svelte и маленький API (`src/backend/`) на Node без зависимостей: он хранит список в JSON-файле на сервере и держит его в памяти.
 
 ## Что внутри
 
 - **Выбор экрана** (`/`) -- две ссылки, по одной на телевизор.
 - **Табло** (`/tv/1`, `/tv/2`) -- 1920×1080, 12 кранов на экран. Свежий список табло забирает на месте, без перезагрузки, а после деплоя один раз перезагружается само. 25-й кран чередуется с последним местом второго экрана.
-- **Редактор** (`/editor`) -- названия, пивоварни, стили, IBU, крепость и цены, перестановка перетаскиванием, обложки (сжимаются в браузере до 250 px и хранятся прямо в gist).
+- **Редактор** (`/editor`) -- названия, пивоварни, стили, IBU, крепость и цены, перестановка перетаскиванием, обложки (сжимаются в браузере до 250 px и хранятся прямо в списке).
 - **API** -- `GET /api/items` для табло, `PUT /api/items` для редактора, `GET /api/health`.
 
 ## Запуск
@@ -52,13 +52,16 @@ npm run api            # API
 npm run format:check && npm run lint:js && npm run lint:css && npm run check && npm test
 ```
 
-### Gist
+### Данные
 
-1. Создайте секретный gist с файлом, например `taplist.json`, и содержимым `{ "record": [] }`.
-2. Создайте [fine-grained токен](https://github.com/settings/personal-access-tokens/new) только с правом **Gists: Read and write**.
-3. Пропишите в `.env` токен, ID gist (конец его адреса) и имя файла, см. [`.env.example`](.env.example).
+Список кранов -- один JSON-файл `taplist.json` в каталоге `DATA_DIR`: на сервере это volume `community-taplist-data`, смонтированный в `/data`, локально `.data/` в корне репо. Локально API при первом запуске создаёт файл из примера, на проде без файла не стартует.
 
-Редактор перезаписывает файл целиком. С `CACHE=1` правки, сделанные прямо в gist, появятся только после перезапуска API.
+Редактор перезаписывает файл целиком, а прошлую версию откладывает в `history/`: там последние 30 сохранений. Вернуть одну из них:
+
+```sh
+ssh projects 'docker exec community-taplist-api ls /data/history'
+ssh projects 'docker exec community-taplist-api cp /data/history/<версия>.json /data/taplist.json && docker restart community-taplist-api'
+```
 
 ## Телевизоры
 

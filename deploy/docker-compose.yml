@@ -23,8 +23,7 @@ services:
       - edge
     logging: *logging
 
-  # Токен и gist лежат в /srv/community-taplist/.env, образец в .env.example.
-  # VPN не нужен: api.github.com отвечает из РФ.
+  # Список кранов лежит в volume data: переживает пересборку и хранит последние версии в history/.
   api:
     build:
       context: ..
@@ -33,6 +32,8 @@ services:
     container_name: community-taplist-api
     restart: unless-stopped
     env_file: ../.env
+    volumes:
+      - data:/data
     # Весь список с обложками держится в памяти, этого хватает с запасом.
     mem_limit: 160m
     healthcheck:
@@ -48,6 +49,10 @@ services:
 secrets:
   env:
     file: ../.env
+
+volumes:
+  data:
+    name: community-taplist-data
 
 networks:
   edge:

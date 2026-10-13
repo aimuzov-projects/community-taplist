@@ -7,6 +7,10 @@ ENV NODE_ENV=production
 COPY package.json ./
 COPY src/shared ./src/shared
 COPY src/backend ./src/backend
+# Список кранов и его история живут в volume. Каталог создаётся здесь, чтобы новый пустой volume
+# унаследовал владельца node и API мог в него писать.
+RUN mkdir /data && chown node:node /data
+ENV DATA_DIR=/data
 USER node
 EXPOSE 8787
 CMD ["node", "src/backend/server.ts"]
