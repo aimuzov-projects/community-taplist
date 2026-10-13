@@ -5,6 +5,7 @@
 	import type { Item } from '#shared/types.ts'
 
 	import EditorRow from './editor-row.svelte'
+	import Spinner from './spinner.svelte'
 
 	let items: Item[] = $state([])
 	let saved: Item[] = $state([])
@@ -113,7 +114,9 @@
 		</div>
 	</header>
 
-	{#if !loading}
+	{#if loading}
+		<div class="editor__loading"><Spinner large /></div>
+	{:else}
 		<div class="editor__list">
 			<div class="editor__head">
 				<span>#</span>
@@ -254,6 +257,12 @@
 
 		&__button--busy {
 			animation: busy 1s ease-in-out infinite;
+		}
+
+		&__loading {
+			display: flex;
+			justify-content: center;
+			padding-top: 120px;
 		}
 
 		&__list {
