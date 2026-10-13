@@ -1,4 +1,6 @@
 <script lang="ts">
+	import ImagePlus from '@lucide/svelte/icons/image-plus'
+
 	import Spinner from './spinner.svelte'
 
 	let { cover = $bindable() }: { cover: string } = $props()
@@ -40,7 +42,11 @@
 
 <button class="cover" type="button" onclick={() => input.click()} style:background-image="url({cover})">
 	<input class="cover__input" type="file" accept=".jpg, .jpeg, .png" onchange={change} bind:this={input} />
-	<img class="cover__preview" src={cover} alt="" />
+	{#if cover}
+		<img class="cover__preview" src={cover} alt="" />
+	{:else}
+		<span class="cover__empty"><ImagePlus size={20} /></span>
+	{/if}
 
 	{#if changing}
 		<div class="cover__loading">
@@ -70,6 +76,14 @@
 
 		&__input {
 			display: none;
+		}
+
+		&__empty {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			height: 100%;
+			color: #4a403b;
 		}
 
 		&__preview {

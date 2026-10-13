@@ -1,7 +1,15 @@
 <script lang="ts">
+	import Beer from '@lucide/svelte/icons/beer'
+	import CircleAlert from '@lucide/svelte/icons/circle-alert'
+	import CircleCheck from '@lucide/svelte/icons/circle-check'
+	import EyeOff from '@lucide/svelte/icons/eye-off'
+	import Repeat from '@lucide/svelte/icons/repeat'
+	import Save from '@lucide/svelte/icons/save'
+	import Tv from '@lucide/svelte/icons/tv'
+	import Undo2 from '@lucide/svelte/icons/undo-2'
 	import { onMount } from 'svelte'
 
-	import { groupTitle } from '#frontend/lib/tap-groups.ts'
+	import { tapGroup } from '#frontend/lib/tap-groups.ts'
 	import type { Item } from '#shared/types.ts'
 
 	import EditorRow from './editor-row.svelte'
@@ -28,7 +36,7 @@
 	async function request(init?: RequestInit) {
 		const response = await fetch('/api/items', { cache: 'no-store', ...init })
 		if (!response.ok) throw new Error(`${response.status} ${(await response.json().catch(() => ({}))).error ?? ''}`)
-		return ((await response.json()) as { items: Item[] }).items
+		return response.json()
 	}
 
 	async function save(event: SubmitEvent) {
@@ -36,14 +44,16 @@
 		saving = true
 		error = ''
 
+		// Сохранённым считается отправленное: правки, сделанные во время запроса, останутся несохранёнными.
+		const sent = $state.snapshot(items)
+
 		try {
-			apply(
-				await request({
-					method: 'PUT',
-					headers: { 'content-type': 'application/json' },
-					body: JSON.stringify(items),
-				}),
-			)
+			await request({
+				method: 'PUT',
+				headers: { 'content-type': 'application/json' },
+				body: JSON.stringify(sent),
+			})
+			saved = sent
 		} catch (reason) {
 			error = `Не сохранилось: ${(reason as Error).message}`
 		} finally {
@@ -66,7 +76,7 @@
 
 	onMount(() => {
 		request()
-			.then(apply)
+			.then(({ items }: { items: Item[] }) => apply(items))
 			.catch((reason) => (error = `Не загрузился таплист: ${reason.message}`))
 			.finally(() => (loading = false))
 	})
@@ -77,39 +87,32 @@
 <form class="editor" onsubmit={save}>
 	<header class="editor__bar">
 		<div class="editor__brand">
-			<svg class="editor__logo" viewBox="0 0 48 48" aria-hidden="true">
-				<path d="M9 16h24v24a4 4 0 0 1-4 4H13a4 4 0 0 1-4-4z" />
-				<path d="M33 21h4a4 4 0 0 1 4 4v6a4 4 0 0 1-4 4h-4" />
-				<path d="M9 16a5 5 0 0 1 4-8 6 6 0 0 1 10-2 5 5 0 0 1 8 3 4 4 0 0 1 2 7" />
-				<path d="M16 24v12M21 24v12M26 24v12" />
-			</svg>
+			<span class="editor__logo"><Beer size={28} /></span>
 			<span class="editor__title">Таплист</span>
 			<span class="editor__subtitle">редактор</span>
 		</div>
 
 		<p class="editor__status" class:editor__status--dirty={modified} class:editor__status--error={error}>
 			{#if error}
-				{error}
-			{:else if loading}
-				Загрузка…
+				<CircleAlert size={16} />{error}
 			{:else if modified}
-				Есть несохранённые изменения
-			{:else}
-				Все изменения сохранены
+				<CircleAlert size={16} />Есть несохранённые изменения
+			{:else if !loading}
+				<CircleCheck size={16} />Все изменения сохранены
 			{/if}
 		</p>
 
 		<div class="editor__actions">
-			<button class="editor__button" type="button" disabled={!modified || saving} onclick={revert}
-				>Отменить</button
-			>
+			<button class="editor__button" type="button" disabled={!modified || saving} onclick={revert}>
+				<Undo2 size={18} />Отменить
+			</button>
 			<button
 				class="editor__button editor__button--primary"
 				class:editor__button--busy={saving}
 				type="submit"
 				disabled={!modified || saving}
 			>
-				{saving ? 'Сохраняю…' : 'Сохранить'}
+				<Save size={18} />{saving ? 'Сохраняю…' : 'Сохранить'}
 			</button>
 		</div>
 	</header>
@@ -126,14 +129,16 @@
 				<span>Стиль</span>
 				<span class="editor__head-cell--right">IBU</span>
 				<span class="editor__head-cell--right">ALC</span>
-				<span class="editor__head-cell--right">0,4</span>
-				<span class="editor__head-cell--right">0,25</span>
+				<span class="editor__head-cell--right">0,4 ₽</span>
+				<span class="editor__head-cell--right">0,25 ₽</span>
+				<span></span>
 			</div>
 
 			{#each items as item, index (item)}
-				{@const title = groupTitle(index)}
-				{#if title}
-					<h2 class="editor__group">{title}</h2>
+				{@const group = tapGroup(index)}
+				{#if group}
+					{@const Icon = { screen: Tv, extra: Repeat, hidden: EyeOff }[group.kind]}
+					<h2 class="editor__group"><Icon size={16} />{group.title}</h2>
 				{/if}
 				<EditorRow bind:item={items[index]} {index} changed={isChanged(index)} {onDragDrop} />
 			{/each}
@@ -162,7 +167,8 @@
 			display: flex;
 			gap: 24px;
 			align-items: center;
-			padding: 14px 32px;
+			height: var(--bar-height);
+			padding: 0 32px;
 			border-bottom: 1px solid var(--line);
 			background: rgb(19 17 17 / 92%);
 			backdrop-filter: blur(8px);
@@ -175,14 +181,9 @@
 		}
 
 		&__logo {
+			display: flex;
 			align-self: center;
-			width: 28px;
-			height: 28px;
-			fill: none;
-			stroke: var(--accent);
-			stroke-linecap: round;
-			stroke-linejoin: round;
-			stroke-width: 2.6;
+			color: var(--accent);
 		}
 
 		&__title {
@@ -199,7 +200,11 @@
 		}
 
 		&__status {
+			display: flex;
 			flex: 1;
+			gap: 6px;
+			align-items: center;
+			justify-content: flex-end;
 			margin: 0;
 			font-size: 15px;
 			color: var(--muted);
@@ -221,6 +226,9 @@
 
 		&__button {
 			cursor: pointer;
+			display: inline-flex;
+			gap: 8px;
+			align-items: center;
 			padding: 9px 18px;
 			border: 1px solid var(--line);
 			border-radius: 8px;
@@ -271,23 +279,41 @@
 			padding: 24px 32px 64px;
 		}
 
+		/* Шапка таблицы прилипает под верхней панелью и просвечивает, чтобы строки под ней угадывались. */
 		&__head {
+			position: sticky;
+			z-index: 1;
+			top: var(--bar-height);
 			display: grid;
 			grid-template-columns: var(--editor-columns);
 			gap: 12px;
-			padding: 0 14px 8px;
+			margin: 0 -14px;
+			padding: 12px 28px 10px;
+			border-bottom: 1px solid var(--line);
 			font-size: 12px;
 			font-weight: 700;
 			color: var(--muted);
 			text-transform: uppercase;
 			letter-spacing: 0.12em;
+			background: rgb(19 17 17 / 75%);
+			backdrop-filter: blur(8px);
 		}
 
 		&__head-cell--right {
 			text-align: right;
 		}
 
+		/* В узком окне подписи колонок иначе наезжают друг на друга. */
+		&__head > * {
+			overflow: hidden;
+			text-overflow: ellipsis;
+			white-space: nowrap;
+		}
+
 		&__group {
+			display: flex;
+			gap: 8px;
+			align-items: center;
 			margin: 28px 0 10px;
 			font-size: 14px;
 			font-weight: 700;
@@ -299,7 +325,8 @@
 
 	/* Колонки шапки и строк должны совпадать, поэтому сетка общая. */
 	:global(:root) {
-		--editor-columns: 56px 48px minmax(0, 2fr) minmax(0, 1.2fr) minmax(0, 1.2fr) 64px 64px 72px 72px;
+		--editor-columns: 56px 48px minmax(0, 2fr) minmax(0, 1.2fr) minmax(0, 1.2fr) 64px 64px 72px 72px 32px;
+		--bar-height: 68px;
 	}
 
 	@keyframes busy {
