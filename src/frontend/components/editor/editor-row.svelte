@@ -192,6 +192,11 @@
 			background: #131111;
 			transition: border-color 0.15s;
 
+			/* На телефоне от 16px, иначе Safari приближает поле — см. global.css. */
+			@media (--touch) {
+				font-size: 16px;
+			}
+
 			&::placeholder {
 				color: #4a403b;
 			}
