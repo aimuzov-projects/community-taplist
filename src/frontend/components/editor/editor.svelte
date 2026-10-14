@@ -8,6 +8,7 @@
 	import Save from '@lucide/svelte/icons/save'
 	import Tv from '@lucide/svelte/icons/tv'
 	import Undo2 from '@lucide/svelte/icons/undo-2'
+	import Credit from '@aimuzov-projects/infra-site-kit/credit.svelte'
 	import { onMount } from 'svelte'
 
 	import Spinner from '#frontend/components/spinner.svelte'
@@ -46,7 +47,9 @@
 
 	async function request(init?: RequestInit) {
 		const response = await fetch('/api/items', { cache: 'no-store', ...init })
+
 		if (!response.ok) throw new Error(`${response.status} ${(await response.json().catch(() => ({}))).error ?? ''}`)
+
 		return response.json()
 	}
 
@@ -64,6 +67,7 @@
 				headers: { 'content-type': 'application/json' },
 				body: JSON.stringify(sent),
 			})
+
 			saved = sent
 		} catch (reason) {
 			error = `Не сохранилось: ${(reason as Error).message}`
@@ -186,17 +190,7 @@
 	{/if}
 
 	<footer class="editor__footer">
-		<span>
-			Сделано с ❤️ <a class="editor__link" href="https://github.com/aimuzov" target="_blank" rel="noopener"
-				>aimuzov</a
-			>
-		</span>
-		<a
-			class="editor__link"
-			href="https://github.com/aimuzov-projects/community-taplist"
-			target="_blank"
-			rel="noopener">Исходный код на GitHub</a
-		>
+		<Credit repo="https://github.com/aimuzov-projects/community-taplist" />
 	</footer>
 </form>
 
@@ -345,25 +339,15 @@
 		}
 
 		&__footer {
-			display: flex;
-			flex-wrap: wrap;
-			gap: 8px 24px;
-			justify-content: space-between;
+			/* Ссылки подписи из infra-site-kit при наведении светлеют до цвета текста. */
+			--credit-hover: var(--fg);
+
 			max-width: 1240px;
 			margin: 0 auto;
 			padding: 20px 32px;
 			border-top: 1px solid var(--line);
 			font-size: 13px;
 			color: var(--muted);
-		}
-
-		&__link {
-			color: inherit;
-			text-underline-offset: 3px;
-
-			&:hover {
-				color: var(--fg);
-			}
 		}
 
 		/* Шапка таблицы прилипает под верхней панелью и просвечивает, чтобы строки под ней угадывались. */
