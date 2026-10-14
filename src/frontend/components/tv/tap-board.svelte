@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte'
 
+	import Spinner from '#frontend/components/spinner.svelte'
 	import { BUILD_VERSION } from '#frontend/lib/build.ts'
 	import { tvColumns } from '#shared/tv.ts'
 	import type { Item } from '#shared/types.ts'
@@ -12,6 +13,7 @@
 	const intervalMs = Number(import.meta.env.PUBLIC_DATA_UPDATE_INTERVAL) || 60_000
 
 	let items: Item[] = $state([])
+	let loaded = $state(false)
 	const columns = $derived(tvColumns(tv, items))
 
 	// После деплоя старая страница не найдёт новых чанков: один раз перезагружаемся.
@@ -33,6 +35,7 @@
 
 		// Обновляем табло на месте, без мигания полной перезагрузки. При ошибке остаётся прежний список.
 		items = ((await response.json()) as { items: Item[] }).items
+		loaded = true
 	}
 
 	onMount(() => {
@@ -42,7 +45,11 @@
 	})
 </script>
 
-<div class="tap-board">
+<div class="tap-board" class:tap-board--loading={!loaded}>
+	{#if !loaded}
+		<Spinner size="board" />
+	{/if}
+
 	{#each columns as column, index (index)}
 		<div class="tap-board__column">
 			{#each column as [primary, secondary] (primary.number)}
@@ -65,6 +72,11 @@
 		width: 1920rem;
 		height: 1080rem;
 		background-color: #131111;
+
+		&--loading {
+			align-items: center;
+			justify-content: center;
+		}
 
 		&__card {
 			position: relative;

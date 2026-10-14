@@ -1,7 +1,8 @@
 <script lang="ts">
 	import ImagePlus from '@lucide/svelte/icons/image-plus'
 
-	import Spinner from './spinner.svelte'
+	import Spinner from '#frontend/components/spinner.svelte'
+
 	import { tooltip } from './tooltip.ts'
 
 	let { cover = $bindable() }: { cover: string } = $props()

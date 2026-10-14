@@ -1,9 +1,9 @@
 <script lang="ts">
 	// Размер классом, а не style: спиннер попадает в серверный HTML, где CSP режет атрибуты style.
-	let { large = false }: { large?: boolean } = $props()
+	let { size = 'small' }: { size?: 'small' | 'large' | 'board' } = $props()
 </script>
 
-<div class="spinner" class:spinner--large={large} role="status" aria-label="Загрузка">
+<div class="spinner spinner--{size}" role="status" aria-label="Загрузка">
 	<svg class="spinner__icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
 		<g fill="none">
 			<path
@@ -20,8 +20,6 @@
 
 <style>
 	.spinner {
-		width: 24px;
-		height: 24px;
 		color: #e0a458;
 		animation: spin 1s linear infinite;
 
@@ -32,9 +30,20 @@
 		}
 	}
 
+	.spinner--small {
+		width: 24px;
+		height: 24px;
+	}
+
 	.spinner--large {
 		width: 44px;
 		height: 44px;
+	}
+
+	/* Табло меряет в rem: 1rem -- пиксель макета 1920×1080. */
+	.spinner--board {
+		width: 120rem;
+		height: 120rem;
 	}
 
 	@keyframes spin {
