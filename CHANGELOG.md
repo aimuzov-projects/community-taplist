@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.2.1](https://github.com/aimuzov-projects/community-taplist/compare/v2.2.0...v2.2.1) (2026-10-14)
+
+
+### Bug Fixes
+
+* **editor:** label the number inputs of a tap row ([2e8645f](https://github.com/aimuzov-projects/community-taplist/commit/2e8645f36522ab19c86647579af385a0945c2a62))
+
 ## [2.2.0](https://github.com/aimuzov-projects/community-taplist/compare/v2.1.0...v2.2.0) (2026-10-14)
 
 
