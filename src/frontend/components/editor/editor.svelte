@@ -184,6 +184,20 @@
 			{/each}
 		</div>
 	{/if}
+
+	<footer class="editor__footer">
+		<span>
+			Сделано с ❤️ <a class="editor__link" href="https://github.com/aimuzov" target="_blank" rel="noopener"
+				>aimuzov</a
+			>
+		</span>
+		<a
+			class="editor__link"
+			href="https://github.com/aimuzov-projects/community-taplist"
+			target="_blank"
+			rel="noopener">Исходный код на GitHub</a
+		>
+	</footer>
 </form>
 
 <Help bind:this={help} />
@@ -328,6 +342,28 @@
 			max-width: 1240px;
 			margin: 0 auto;
 			padding: 24px 32px 64px;
+		}
+
+		&__footer {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 8px 24px;
+			justify-content: space-between;
+			max-width: 1240px;
+			margin: 0 auto;
+			padding: 20px 32px;
+			border-top: 1px solid var(--line);
+			font-size: 13px;
+			color: var(--muted);
+		}
+
+		&__link {
+			color: inherit;
+			text-underline-offset: 3px;
+
+			&:hover {
+				color: var(--fg);
+			}
 		}
 
 		/* Шапка таблицы прилипает под верхней панелью и просвечивает, чтобы строки под ней угадывались. */
