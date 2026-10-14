@@ -12,3 +12,5 @@ docker-compose.override.yml
 
 # Список кранов при локальном запуске API.
 .data/
+test-results/
+playwright-report/
