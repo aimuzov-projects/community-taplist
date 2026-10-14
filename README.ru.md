@@ -79,9 +79,9 @@ ssh projects 'docker exec community-taplist-api cp /data/history/<версия>.
 
 ## Выкладка
 
-Пуш в `main` запускает GitHub Actions: сначала проверки, затем вход по SSH на сервер `projects`. Там ключ привязан к [`deploy/remote.sh`](deploy/remote.sh), который подтягивает `main` и пересобирает контейнеры из [`deploy/docker-compose.yml`](deploy/docker-compose.yml): nginx со статикой и API. Домен, TLS и пароль редактора (`basic_auth` на `/editor` и `PUT /api/items`) держит общий Caddy из `aimuzov-projects/infra-server`. `.env` лежит на сервере в `/srv/community-taplist`.
+Пуш в `main` запускает GitHub Actions: сначала проверки, затем вход по SSH на сервер `projects`. Там ключ запускает общий [`deploy/site.sh`](https://github.com/aimuzov-projects/infra-server/blob/main/deploy/site.sh) из infra-server, который подтягивает `main` и пересобирает контейнеры из [`deploy/docker-compose.yml`](deploy/docker-compose.yml): nginx со статикой и API. Домен, TLS и пароль редактора (`basic_auth` на `/editor` и `PUT /api/items`) держит общий Caddy из `aimuzov-projects/infra-server`. `.env` лежит на сервере в `/srv/community-taplist`.
 
-Откатить выкладку -- значит сделать `git revert` плохого коммита в `main` и запушить. `remote.sh` поднимает compose с `--remove-orphans`, так что контейнеры, которых в прежней версии не было, уходят сами.
+Откатить выкладку -- значит сделать `git revert` плохого коммита в `main` и запушить. `site.sh` поднимает compose с `--remove-orphans`, так что контейнеры, которых в прежней версии не было, уходят сами.
 
 ## Благодарности
 
