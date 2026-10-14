@@ -15,7 +15,10 @@ const screens = Array.from({ length: TV_COUNT }, (_, index) => index + 1)
 			</a>
 		))}
 		<a class="screen-picker__screen" href="/editor">
-			<!-- Lucide pencil inlined: astro check can't type Svelte components in .astro. -->
+			<!--
+				Карандаш из Lucide вставлен инлайном, так как astro check не умеет
+				типизировать Svelte-компоненты внутри .astro.
+			-->
 			<svg
 				class="screen-picker__icon"
 				viewBox="0 0 24 24"

@@ -1,5 +1,6 @@
 import { EXTRA_ITEM_INDEX, ITEMS_PER_LIST, TV_COUNT } from '#shared/constants.ts'
 
+/** Заголовок группы кранов в редакторе: экран, чередующийся кран или краны, которых нет на табло. */
 export type TapGroup = { kind: 'screen' | 'extra' | 'hidden'; title: string }
 
 /** Группа, которая начинается с этого крана, или `null`, если кран идёт внутри группы. */

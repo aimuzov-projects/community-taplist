@@ -45,6 +45,10 @@ function hide() {
 	tip?.classList.remove('editor-tooltip--visible')
 }
 
+/**
+ * Подсказка над элементом при наведении или фокусе, появляется с задержкой.
+ * Пустой текст -- подсказки нет, клик по элементу её прячет.
+ */
 export const tooltip: Action<HTMLElement, string | undefined> = (node, initial) => {
 	let text = initial
 

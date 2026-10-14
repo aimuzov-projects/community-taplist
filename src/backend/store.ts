@@ -71,6 +71,14 @@ let cache: Promise<Item[]> | undefined
 // Сохранения идут по одному: два одновременных PUT не перемешают историю и файл.
 let queue: Promise<unknown> = Promise.resolve()
 
+/**
+ * Список кранов из `taplist.json`.
+ *
+ * Файл читается один раз, дальше список отдаётся из кэша. Неудачное чтение
+ * в кэше не остаётся, следующий вызов прочитает файл заново.
+ *
+ * Если файла нет, в разработке он создаётся из моков, а в продакшене бросается ошибка.
+ */
 export function itemsGet(): Promise<Item[]> {
 	cache ??= read().catch((error) => {
 		cache = undefined
@@ -81,6 +89,12 @@ export function itemsGet(): Promise<Item[]> {
 	return cache
 }
 
+/**
+ * Сохраняет список кранов, прошлая версия файла при этом уходит в `history/`.
+ *
+ * Сохранения выполняются по очереди. Упавшее сохранение отклоняет только свой промис,
+ * следующие в очереди всё равно выполнятся.
+ */
 export function itemsPut(items: Item[]): Promise<Item[]> {
 	const saved = queue.then(async () => {
 		await write(items)

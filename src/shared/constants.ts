@@ -1,3 +1,4 @@
+/** Кранов на одном экране. */
 export const ITEMS_PER_LIST = 12
 export const ITEMS_PER_COLUMN = 4
 export const TV_COUNT = 2

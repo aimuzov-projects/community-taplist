@@ -1,3 +1,4 @@
+/** Шуточная надпись на карточке пустого крана. */
 export type EmptyTapPhrase = {
 	title: string
 	note: string
@@ -7,8 +8,11 @@ export type EmptyTapPhrase = {
 export const PHRASE_TITLE_MAX = 20
 export const PHRASE_NOTE_MAX = 20
 
+// Неразрывный пробел (U+00A0), в исходнике его не отличить от обычного.
+// Держит предлог на одной строке со следующим словом.
 const nbsp = ' '
 
+/** Фразы для пустых кранов, карточка на табло меняет их по таймеру. */
 export const EMPTY_TAP_PHRASES: EmptyTapPhrase[] = [
 	{ title: 'Скоро новое', note: 'Кран ждёт кегу' },
 	{ title: 'Кран отдыхает', note: 'Набирается сил' },

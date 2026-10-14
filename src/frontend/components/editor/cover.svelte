@@ -10,7 +10,7 @@
 	let input: HTMLInputElement
 	let changing = $state(false)
 
-	// Обложки лежат в gist как data URL, поэтому держим их маленькими.
+	// Обложки лежат прямо в списке кранов (`taplist.json`) как data URL, поэтому держим их маленькими.
 	const COVER_SIZE_MAX = 250
 	const COVER_QUALITY = 0.85
 

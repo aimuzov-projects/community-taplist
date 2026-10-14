@@ -1,5 +1,11 @@
 import type { Action } from 'svelte/action'
 
+/**
+ * Вызывается, когда строку бросили на другую строку.
+ *
+ * @param current - Индекс строки, на которую бросили.
+ * @param next - Индекс строки, которую тащили.
+ */
 export type OnDragDrop = (current: number, next: number) => void
 
 // Пока строку тащат, вложенные поля не ловят мышь: иначе dragenter и dragleave
@@ -10,6 +16,12 @@ export const OVER = 'editor-row--over'
 
 let dragged: HTMLElement | null = null
 
+/**
+ * Перетаскивание строк редактора на нативном drag and drop.
+ *
+ * Индекс строки берётся из её `data-index`, поэтому атрибут должен стоять на том же узле.
+ * Бросок строки на саму себя колбэк не вызывает.
+ */
 export const draggable: Action<HTMLElement, OnDragDrop> = (node, onDragDrop) => {
 	let onDrop = onDragDrop
 

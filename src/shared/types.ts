@@ -1,3 +1,8 @@
+/**
+ * Кран таплиста.
+ *
+ * `price04` и `price025` -- цены за 0,4 и 0,25 л.
+ */
 export type Item = {
 	cover: string
 	name: string
@@ -32,6 +37,7 @@ export function isEmptyItem(item: Item) {
 	return item.name.trim() === ''
 }
 
+/** Проверка таплиста, пришедшего извне: тела запроса и файла с данными. */
 export function isItemList(value: unknown): value is Item[] {
 	return Array.isArray(value) && value.every(isItem)
 }

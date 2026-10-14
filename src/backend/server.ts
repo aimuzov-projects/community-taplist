@@ -17,6 +17,12 @@ export const BODY_LIMIT = 16 * 1024 * 1024
 
 type Reply = [status: number, body: unknown]
 
+/**
+ * Ошибка с HTTP-статусом для клиента.
+ *
+ * Статус и сообщение уходят в ответ как есть. Любая другая ошибка
+ * пишется в лог и отдаётся с кодом 500.
+ */
 export class HttpError extends Error {
 	// Без parameter properties: Node только стирает типы и такой синтаксис не запустит.
 	readonly status: number
@@ -27,6 +33,14 @@ export class HttpError extends Error {
 	}
 }
 
+/**
+ * Собирает тело запроса целиком и разбирает его как JSON.
+ *
+ * Бросает {@link HttpError} 413, если тело больше `limit`, и 400, если это не JSON.
+ *
+ * @param request Тело запроса, на вход годится и `IncomingMessage`.
+ * @param limit Предел размера тела в байтах.
+ */
 export async function readJson(request: AsyncIterable<Buffer>, limit = BODY_LIMIT): Promise<unknown> {
 	const chunks: Buffer[] = []
 	let size = 0
