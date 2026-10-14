@@ -206,7 +206,12 @@
 		--accent: #e0a458;
 		--danger: #e5735c;
 
+		/* Колонка на весь экран: спиннер загрузки встаёт в середину свободного места,
+		   футер прижимается к нижнему краю, пока список короче экрана. */
+		display: flex;
+		flex-direction: column;
 		min-height: 100vh;
+		min-height: 100dvh;
 		color: var(--fg);
 		background: var(--bg);
 
@@ -328,11 +333,14 @@
 
 		&__loading {
 			display: flex;
+			flex: 1;
+			align-items: center;
 			justify-content: center;
-			padding-top: 120px;
 		}
 
+		/* Ширина явно: в колонке auto-отступы иначе ужимают блок по содержимому. */
 		&__list {
+			width: 100%;
 			max-width: 1240px;
 			margin: 0 auto;
 			padding: 24px 32px 64px;
@@ -342,8 +350,9 @@
 			/* Ссылки подписи из infra-site-kit при наведении светлеют до цвета текста. */
 			--credit-hover: var(--fg);
 
+			width: 100%;
 			max-width: 1240px;
-			margin: 0 auto;
+			margin: auto auto 0;
 			padding: 20px 32px;
 			border-top: 1px solid var(--line);
 			font-size: 13px;
