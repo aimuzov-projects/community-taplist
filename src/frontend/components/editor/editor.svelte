@@ -10,12 +10,12 @@
 	import Undo2 from '@lucide/svelte/icons/undo-2'
 	import { onMount } from 'svelte'
 
+	import Spinner from '#frontend/components/spinner.svelte'
 	import { tapGroup } from '#frontend/lib/tap-groups.ts'
 	import type { Item } from '#shared/types.ts'
 
 	import EditorRow from './editor-row.svelte'
 	import Help from './help.svelte'
-	import Spinner from './spinner.svelte'
 	import { tooltip } from './tooltip.ts'
 
 	const groupHints = {
@@ -153,7 +153,7 @@
 	</header>
 
 	{#if loading}
-		<div class="editor__loading"><Spinner large /></div>
+		<div class="editor__loading"><Spinner size="large" /></div>
 	{:else}
 		<div class="editor__list">
 			<div class="editor__head">
