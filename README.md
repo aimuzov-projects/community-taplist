@@ -79,9 +79,9 @@ The build puts a CSP with hashes of Astro scripts and styles into every page (`s
 
 ## Deployment
 
-A push to `main` runs GitHub Actions: checks first, then SSH into the `projects` server. There the key runs the shared [`deploy/site.sh`](https://github.com/aimuzov-projects/infra-server/blob/main/deploy/site.sh) of infra-server, which pulls `main` and rebuilds the containers from [`deploy/docker-compose.yml`](deploy/docker-compose.yml): nginx with the static site and the API. The domain, TLS and the editor password (`basic_auth` on `/editor` and `PUT /api/items`) are handled by the shared Caddy from `aimuzov-projects/infra-server`. `.env` lives on the server in `/srv/community-taplist`.
+Merging the release PR that release-please keeps open runs GitHub Actions: checks first, then SSH into the `projects` server. There the key runs the shared [`deploy/site.sh`](https://github.com/aimuzov-projects/infra-server/blob/main/deploy/site.sh) of infra-server, which pulls `main` and rebuilds the containers from [`deploy/docker-compose.yml`](deploy/docker-compose.yml): nginx with the static site and the API. The domain, TLS and the editor password (`basic_auth` on `/editor` and `PUT /api/items`) are handled by the shared Caddy from `aimuzov-projects/infra-server`. `.env` lives on the server in `/srv/community-taplist`.
 
-To roll back, `git revert` the bad commit on `main` and push. `site.sh` runs compose with `--remove-orphans`, so containers the previous version did not have go away on their own.
+To roll back fast, run Deploy by hand with the previous tag: `gh workflow run deploy.yml -f tag=v1.2.3`. A fix of the bad commit goes out through the release PR like any change. `site.sh` runs compose with `--remove-orphans`, so containers the previous version did not have go away on their own.
 
 ## Acknowledgements
 
