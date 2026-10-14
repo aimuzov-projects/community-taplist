@@ -52,6 +52,8 @@ Before committing:
 npm run format:check && npm run lint:js && npm run lint:css && npm run check && npm test
 ```
 
+The e2e tests in [`e2e`](e2e) build the site, start the API on the sample list next to it and open the start page, both TVs and the editor in Chromium with the checks of [infra-site-kit](https://github.com/aimuzov-projects/infra-site-kit): the pages answer without console errors and pass axe. The browser is installed once with `npx playwright install chromium`, then `npm run test:e2e`.
+
 ### Data
 
 The tap list is a single JSON file, `taplist.json`, in `DATA_DIR`: on the server that is the `community-taplist-data` volume mounted at `/data`, locally `.data/` in the repo root. Locally the API creates the file from the sample on first run; in production it refuses to start without it.

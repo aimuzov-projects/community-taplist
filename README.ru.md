@@ -52,6 +52,8 @@ npm run api            # API
 npm run format:check && npm run lint:js && npm run lint:css && npm run check && npm test
 ```
 
+E2E-тесты в [`e2e`](e2e) собирают сайт, поднимают рядом API на списке из примера и открывают в Chromium стартовую страницу, оба табло и редактор с проверками из [infra-site-kit](https://github.com/aimuzov-projects/infra-site-kit): страницы отвечают без ошибок в консоли и проходят axe. Браузер ставится один раз через `npx playwright install chromium`, дальше `npm run test:e2e`.
+
 ### Данные
 
 Список кранов -- один JSON-файл `taplist.json` в каталоге `DATA_DIR`: на сервере это volume `community-taplist-data`, смонтированный в `/data`, локально `.data/` в корне репо. Локально API при первом запуске создаёт файл из примера, на проде без файла не стартует.

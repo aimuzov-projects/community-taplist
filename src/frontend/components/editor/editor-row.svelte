@@ -69,18 +69,32 @@
 	/>
 	<input class="editor-row__input" type="text" placeholder="Пивоварня" bind:value={item.brewery} />
 	<input class="editor-row__input" type="text" placeholder="Стиль" bind:value={item.style} />
-	<input class="editor-row__input editor-row__input--number" type="text" maxlength="3" bind:value={item.attrs.ibu} />
-	<input class="editor-row__input editor-row__input--number" type="text" maxlength="5" bind:value={item.attrs.alc} />
+	<input
+		class="editor-row__input editor-row__input--number"
+		type="text"
+		maxlength="3"
+		aria-label="Горечь крана {index + 1}, IBU"
+		bind:value={item.attrs.ibu}
+	/>
+	<input
+		class="editor-row__input editor-row__input--number"
+		type="text"
+		maxlength="5"
+		aria-label="Крепость крана {index + 1}, %"
+		bind:value={item.attrs.alc}
+	/>
 	<input
 		class="editor-row__input editor-row__input--number"
 		type="text"
 		maxlength="4"
+		aria-label="Цена крана {index + 1} за 0,4 л, ₽"
 		bind:value={item.attrs.price04}
 	/>
 	<input
 		class="editor-row__input editor-row__input--number"
 		type="text"
 		maxlength="4"
+		aria-label="Цена крана {index + 1} за 0,25 л, ₽"
 		bind:value={item.attrs.price025}
 	/>
 	{#if !empty}
