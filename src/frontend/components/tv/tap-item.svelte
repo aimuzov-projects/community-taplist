@@ -1,8 +1,19 @@
 <script lang="ts">
+	import { onMount } from 'svelte'
+
+	import { randomPhrase } from '#frontend/lib/empty-tap-phrases.ts'
 	import type { TapItem } from '#shared/tv.ts'
 	import { isEmptyItem } from '#shared/types.ts'
 
 	let { item }: { item: TapItem } = $props()
+
+	let phrase = $state(randomPhrase())
+
+	// Сдвиг у каждого крана свой, чтобы пустые краны не меняли фразы хором.
+	onMount(() => {
+		const intervalId = setInterval(() => (phrase = randomPhrase(phrase)), 30_000 + Math.random() * 15_000)
+		return () => clearInterval(intervalId)
+	})
 </script>
 
 <div class="tap-item">
@@ -12,9 +23,9 @@
 				<div class="tap-item__number tap-item__number--empty">{item.number}</div>
 			</div>
 			<div class="tap-item__name">
-				<div class="tap-item__name-text tap-item__name-text--empty">Скоро новое</div>
+				<div class="tap-item__name-text tap-item__name-text--empty">{phrase.title}</div>
 			</div>
-			<div class="tap-item__origin">Кран ждёт следующую кегу</div>
+			<div class="tap-item__origin">{phrase.note}</div>
 		</div>
 	{:else}
 		<div class="tap-item__inner">
