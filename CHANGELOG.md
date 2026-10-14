@@ -1,5 +1,23 @@
 # Changelog
 
+## [2.2.0](https://github.com/aimuzov-projects/community-taplist/compare/v2.1.0...v2.2.0) (2026-10-14)
+
+
+### Features
+
+* center the editor spinner and pin the footer to the bottom edge ([aedb423](https://github.com/aimuzov-projects/community-taplist/commit/aedb423a803a2b41ffdbf22e2cd1ac8a93788742))
+* credit the author in the editor footer ([fd4f9ef](https://github.com/aimuzov-projects/community-taplist/commit/fd4f9efc7e42b078bdebb14a69cd7d4ffb7a6153))
+* rotate funny phrases on empty taps ([992e81f](https://github.com/aimuzov-projects/community-taplist/commit/992e81f998b62ad4d397ded90951608cc7cc6f21))
+* show a spinner on the board until the taps load ([01dcaa7](https://github.com/aimuzov-projects/community-taplist/commit/01dcaa763a8471275964e3d7fcc89d96bfa55c2e))
+* take the author credit from infra-site-kit ([f59a7a4](https://github.com/aimuzov-projects/community-taplist/commit/f59a7a4fb68026c91e7f3257c0676a8a0fa24a8c))
+
+
+### Bug Fixes
+
+* load the webOS polyfills from a file covered by the CSP ([7cce510](https://github.com/aimuzov-projects/community-taplist/commit/7cce510988011991711175dbcf08be29e0c742e9))
+* stop iPhone Safari from zooming into form fields ([1f8a84f](https://github.com/aimuzov-projects/community-taplist/commit/1f8a84fbbba0e362e46eef1c97dbece601bc83a6))
+* stop iPhone Safari from zooming into form fields ([a8269f6](https://github.com/aimuzov-projects/community-taplist/commit/a8269f608fb6ae37ade6251109e3c33f4593a65a))
+
 ## [2.1.0](https://github.com/aimuzov-projects/community-taplist/compare/v2.0.0...v2.1.0) (2026-10-13)
 
 ### Features
