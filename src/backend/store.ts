@@ -24,10 +24,12 @@ async function read(): Promise<Item[]> {
 		if (production()) throw new Error(`Нет файла ${dataFile()}: список кранов не найден`)
 
 		await write(structuredClone(mockItems))
+
 		return structuredClone(mockItems)
 	}
 
 	const items: unknown = JSON.parse(text)
+
 	if (!isItemList(items)) throw new Error(`В ${dataFile()} не список кранов`)
 
 	return items
@@ -43,12 +45,14 @@ async function keepHistory() {
 		// миллисекунду, а порядок по имени остаётся хронологическим.
 		const stamp = new Date().toISOString().replaceAll(':', '-')
 		const seq = String(++historySeq).padStart(6, '0')
+
 		await copyFile(dataFile(), join(historyDir(), `${stamp}-${seq}.json`))
 	} catch (error) {
 		if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error
 	}
 
 	const versions = (await readdir(historyDir())).filter((name) => name.endsWith('.json')).sort()
+
 	for (const name of versions.slice(0, -HISTORY_LIMIT)) await rm(join(historyDir(), name))
 }
 
@@ -58,6 +62,7 @@ async function write(items: Item[]) {
 
 	// Сначала пишем рядом, потом подменяем: оборванная запись не оставит битый файл.
 	const temp = `${dataFile()}.tmp`
+
 	await writeFile(temp, JSON.stringify(items, null, 2))
 	await rename(temp, dataFile())
 }
@@ -69,8 +74,10 @@ let queue: Promise<unknown> = Promise.resolve()
 export function itemsGet(): Promise<Item[]> {
 	cache ??= read().catch((error) => {
 		cache = undefined
+
 		throw error
 	})
+
 	return cache
 }
 
@@ -78,9 +85,12 @@ export function itemsPut(items: Item[]): Promise<Item[]> {
 	const saved = queue.then(async () => {
 		await write(items)
 		cache = Promise.resolve(items)
+
 		return items
 	})
+
 	queue = saved.catch(() => {})
+
 	return saved
 }
 

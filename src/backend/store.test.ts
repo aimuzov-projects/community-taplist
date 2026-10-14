@@ -56,17 +56,20 @@ test('сохранение пишет файл, обновляет память 
 	assert.deepEqual(JSON.parse(await readFile(join(dir, 'taplist.json'), 'utf8')), list(3))
 	assert.deepEqual(await itemsGet(), list(3))
 	const [saved] = await history()
+
 	assert.deepEqual(JSON.parse(await readFile(join(dir, 'history', saved), 'utf8')), list(2))
 })
 
 test(`история хранит только ${HISTORY_LIMIT} последних версий`, async () => {
 	await writeFile(join(dir, 'taplist.json'), JSON.stringify(list(1)))
 	await mkdir(join(dir, 'history'))
+
 	for (let day = 1; day <= 5; day++) await writeFile(join(dir, 'history', `2000-01-0${day}.json`), '[]')
 
 	for (let i = 0; i < HISTORY_LIMIT; i++) await itemsPut(list(1))
 
 	const versions = await history()
+
 	assert.equal(versions.length, HISTORY_LIMIT)
 	assert.ok(!versions.includes('2000-01-01.json'))
 })

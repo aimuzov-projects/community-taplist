@@ -6,6 +6,7 @@ export type TapGroup = { kind: 'screen' | 'extra' | 'hidden'; title: string }
 export function tapGroup(index: number): TapGroup | null {
 	if (index < EXTRA_ITEM_INDEX && index % ITEMS_PER_LIST === 0) {
 		const tv = index / ITEMS_PER_LIST + 1
+
 		return { kind: 'screen', title: `Экран ${tv} · краны ${index + 1}–${index + ITEMS_PER_LIST}` }
 	}
 

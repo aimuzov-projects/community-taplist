@@ -16,11 +16,13 @@ function element() {
 		tip.setAttribute('role', 'tooltip')
 		document.body.append(tip)
 	}
+
 	return tip
 }
 
 function show(target: HTMLElement, text: string) {
 	const el = element()
+
 	el.textContent = text
 	el.classList.add('editor-tooltip--visible')
 
@@ -48,10 +50,12 @@ export const tooltip: Action<HTMLElement, string | undefined> = (node, initial) 
 
 	const enter = () => {
 		clearTimeout(timer)
+
 		if (text) timer = setTimeout(() => show(node, text ?? ''), DELAY)
 	}
 
 	const events = { mouseenter: enter, focus: enter, mouseleave: hide, blur: hide, mousedown: hide }
+
 	for (const [type, listener] of Object.entries(events)) node.addEventListener(type, listener)
 
 	return {
@@ -60,6 +64,7 @@ export const tooltip: Action<HTMLElement, string | undefined> = (node, initial) 
 		},
 		destroy() {
 			hide()
+
 			for (const [type, listener] of Object.entries(events)) node.removeEventListener(type, listener)
 		},
 	}

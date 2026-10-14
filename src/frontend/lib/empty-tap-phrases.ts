@@ -33,5 +33,6 @@ export const EMPTY_TAP_PHRASES: EmptyTapPhrase[] = [
 /** Случайная фраза, отличная от `current`, чтобы смена была заметна. */
 export function randomPhrase(current?: EmptyTapPhrase): EmptyTapPhrase {
 	const choices = EMPTY_TAP_PHRASES.filter((phrase) => phrase !== current)
+
 	return choices[Math.floor(Math.random() * choices.length)]
 }

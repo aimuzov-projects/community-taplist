@@ -11,6 +11,7 @@ import { itemsGet, itemsPut } from '#backend/store.ts'
 import { isItemList } from '#shared/types.ts'
 
 const PORT = Number(process.env.PORT || 8787)
+
 // Редактор шлёт весь список вместе с обложками в data URL.
 export const BODY_LIMIT = 16 * 1024 * 1024
 
@@ -32,7 +33,9 @@ export async function readJson(request: AsyncIterable<Buffer>, limit = BODY_LIMI
 
 	for await (const chunk of request) {
 		size += chunk.length
+
 		if (size > limit) throw new HttpError(413, 'Список больше 16 МБ: уменьшите обложки')
+
 		chunks.push(chunk)
 	}
 
@@ -48,8 +51,11 @@ const routes: Record<string, (request: IncomingMessage) => Promise<Reply>> = {
 
 	'PUT /api/items': async (request) => {
 		const items = await readJson(request)
+
 		if (!isItemList(items)) throw new HttpError(400, 'Ожидается список кранов')
+
 		await itemsPut(items)
+
 		// Список с обложками весит мегабайты, а редактор и так знает, что отправил.
 		return [200, { ok: true }]
 	},
@@ -68,6 +74,7 @@ async function handle(request: IncomingMessage, response: ServerResponse) {
 		;[status, body] = route ? await route(request) : [404, { error: 'Нет такой ручки' }]
 	} catch (error) {
 		if (!(error instanceof HttpError)) console.error(error)
+
 		status = error instanceof HttpError ? error.status : 500
 		body = { error: (error as Error).message }
 	}

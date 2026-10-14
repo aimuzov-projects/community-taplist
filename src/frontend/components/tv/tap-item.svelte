@@ -12,6 +12,7 @@
 	// Сдвиг у каждого крана свой, чтобы пустые краны не меняли фразы хором.
 	onMount(() => {
 		const intervalId = setInterval(() => (phrase = randomPhrase(phrase)), 30_000 + Math.random() * 15_000)
+
 		return () => clearInterval(intervalId)
 	})
 </script>

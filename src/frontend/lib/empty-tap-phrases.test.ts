@@ -12,10 +12,12 @@ test('фразы помещаются в карточку крана', () => {
 
 test('фразы не повторяются', () => {
 	const titles = EMPTY_TAP_PHRASES.map(({ title }) => title)
+
 	assert.equal(new Set(titles).size, titles.length)
 })
 
 test('следующая фраза всегда другая', () => {
 	const current = EMPTY_TAP_PHRASES[0]
+
 	for (let index = 0; index < 100; index++) assert.notEqual(randomPhrase(current), current)
 })

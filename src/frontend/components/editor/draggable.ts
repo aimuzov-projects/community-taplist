@@ -12,6 +12,7 @@ let dragged: HTMLElement | null = null
 
 export const draggable: Action<HTMLElement, OnDragDrop> = (node, onDragDrop) => {
 	let onDrop = onDragDrop
+
 	node.draggable = true
 
 	const listeners: Record<string, (event: DragEvent) => void> = {
@@ -33,6 +34,7 @@ export const draggable: Action<HTMLElement, OnDragDrop> = (node, onDragDrop) => 
 		},
 		dragover(event) {
 			event.preventDefault()
+
 			if (event.dataTransfer) event.dataTransfer.dropEffect = 'move'
 		},
 		drop(event) {
@@ -40,7 +42,9 @@ export const draggable: Action<HTMLElement, OnDragDrop> = (node, onDragDrop) => 
 		},
 		dragend() {
 			document.body.classList.remove(DRAGGING)
+
 			for (const row of document.querySelectorAll(`.${OVER}`)) row.classList.remove(OVER)
+
 			node.classList.remove(DRAGGED)
 			dragged = null
 		},
