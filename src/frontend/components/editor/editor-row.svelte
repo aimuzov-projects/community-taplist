@@ -42,6 +42,7 @@
 
 	function restore() {
 		if (erased) fill(erased)
+
 		erased = null
 	}
 </script>

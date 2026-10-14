@@ -19,18 +19,23 @@
 	// После деплоя старая страница не найдёт новых чанков: один раз перезагружаемся.
 	async function isOutdated() {
 		const response = await fetch('/version.json', { cache: 'no-store' })
+
 		if (!response.ok) return false
+
 		const { version } = (await response.json()) as { version: string }
+
 		return version !== BUILD_VERSION
 	}
 
 	async function refresh() {
 		if (await isOutdated()) {
 			location.reload()
+
 			return
 		}
 
 		const response = await fetch('/api/items', { cache: 'no-store' })
+
 		if (!response.ok) throw new Error(`API ответил ${response.status}`)
 
 		// Обновляем табло на месте, без мигания полной перезагрузки. При ошибке остаётся прежний список.
@@ -41,6 +46,7 @@
 	onMount(() => {
 		refresh().catch(console.error)
 		const intervalId = setInterval(() => refresh().catch(console.error), intervalMs)
+
 		return () => clearInterval(intervalId)
 	})
 </script>

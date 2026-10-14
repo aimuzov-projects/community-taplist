@@ -19,6 +19,7 @@ function isItem(value: unknown): value is Item {
 	const { cover, name, style, brewery, attrs } = value as Record<string, unknown>
 
 	if (![cover, name, style, brewery].every(isString)) return false
+
 	if (typeof attrs !== 'object' || attrs === null) return false
 
 	const { alc, ibu, price04, price025 } = attrs as Record<string, unknown>
