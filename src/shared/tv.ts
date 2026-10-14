@@ -1,12 +1,22 @@
 import { EXTRA_ITEM_INDEX, ITEMS_PER_COLUMN, ITEMS_PER_LIST, TV_COUNT } from '#shared/constants.ts'
 import type { Item } from '#shared/types.ts'
 
+/** Кран со сквозным номером по всему таплисту, с единицы. */
 export type TapItem = Item & { number: number }
 
 // Карточка показывает свой кран и, возможно, второй, который чередуется с ним.
 export type TapCard = [TapItem] | [TapItem, TapItem]
 export type TapColumn = TapCard[]
 
+/**
+ * Раскладывает краны экрана по колонкам табло.
+ *
+ * На последнем экране последняя карточка забирает себе кран сверх лимита,
+ * если он есть (см. `EXTRA_ITEM_INDEX`).
+ *
+ * @param tv - Номер экрана, с единицы.
+ * @param items - Весь таплист, а не только краны экрана: номера сквозные.
+ */
 export function tvColumns(tv: number, items: Item[]): TapColumn[] {
 	const numbered = items.map((item, index) => ({ ...item, number: index + 1 }))
 	const start = ITEMS_PER_LIST * (tv - 1)

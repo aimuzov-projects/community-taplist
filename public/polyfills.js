@@ -1,7 +1,8 @@
-// LG webOS 5 browser is Chromium 68. The build lowers the syntax itself, but these Svelte
-// runtime APIs are missing there. Svelte calls replaceAll with a string or a /g regex.
-// A file rather than an inline script: Astro doesn't hash is:inline scripts for its CSP,
-// so an inline body gets blocked, while a same-origin file passes through 'self'.
+// Браузер LG webOS 5 -- Chromium 68. Синтаксис сборка опускает сама, а этих API
+// рантайма Svelte в нём нет. replaceAll Svelte зовёт со строкой или с /g-регуляркой.
+//
+// Файлом, а не инлайн-скриптом потому что is:inline скрипты Astro не хеширует
+// для своей CSP. Инлайн-тело блокируется, а файл с того же origin проходит по 'self'.
 if (typeof globalThis === 'undefined') window.globalThis = window
 
 if (!window.queueMicrotask)

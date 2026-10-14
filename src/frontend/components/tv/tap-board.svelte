@@ -8,6 +8,7 @@
 
 	import TapItem from './tap-item.svelte'
 
+	// `tv` -- номер телевизора с единицы, по нему табло берёт свою часть списка.
 	let { tv }: { tv: number } = $props()
 
 	const intervalMs = Number(import.meta.env.PUBLIC_DATA_UPDATE_INTERVAL) || 60_000
