@@ -1,5 +1,19 @@
 # Changelog
 
+## [2.3.0](https://github.com/aimuzov-projects/community-taplist/compare/v2.2.1...v2.3.0) (2026-10-18)
+
+
+### Features
+
+* move the 404 to the shared not-found page ([9781377](https://github.com/aimuzov-projects/community-taplist/commit/97813774f99698b2ecff20c4e591440277f333cf))
+* move the 404 to the shared not-found page ([147c23e](https://github.com/aimuzov-projects/community-taplist/commit/147c23e730847073331a302785f2514daef55a3b))
+
+
+### Bug Fixes
+
+* **ci:** don't deploy a cancelled run ([#57](https://github.com/aimuzov-projects/community-taplist/issues/57)) ([f8f4e91](https://github.com/aimuzov-projects/community-taplist/commit/f8f4e9151765bfdba1c5172d6c00350041099144))
+* **ci:** run checks once per PR push ([#59](https://github.com/aimuzov-projects/community-taplist/issues/59)) ([2a23a88](https://github.com/aimuzov-projects/community-taplist/commit/2a23a889fcff2cb2a69b9676eae58d095f31bf50))
+
 ## [2.2.1](https://github.com/aimuzov-projects/community-taplist/compare/v2.2.0...v2.2.1) (2026-10-14)
 
 
