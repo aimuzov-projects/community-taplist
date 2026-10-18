@@ -1,34 +1,54 @@
 ---
+import NotFound from '@aimuzov-projects/infra-site-kit/not-found.astro'
+
 import Base from '#frontend/layouts/base.astro'
 import '#frontend/styles/tv.css'
 ---
 
 <Base title="Нет такой страницы">
 	<main class="missing">
-		<h1 class="missing__title">Нет такой страницы</h1>
-		<a class="missing__link" href="/">
-			К выбору экрана
-		</a>
+		<!-- Sitemap у таплиста нет, подсказывать нечего. -->
+		<NotFound title="Нет такой страницы" home={{ href: '/', label: 'К выбору экрана' }} suggest={false} />
 	</main>
 </Base>
 
+<style is:global>
+	/* Размеры not-found.astro заданы в rem под обычный корень в 16px, а tv.css сжимает его
+	   до пикселя холста. Здесь корень -- 32 пикселя холста: страница масштабируется
+	   вместе с экраном, как табло. Ступени те же, что в tv.css, webOS 5 не знает min(). */
+	:root {
+		font-size: 32px;
+	}
+
+	@media (max-width: 1919px) {
+		:root {
+			font-size: 21.333333333px;
+		}
+	}
+
+	@supports (font-size: min(1px, 2px)) {
+		:root {
+			font-size: min(100vw / 60, 100vh / 33.75);
+		}
+	}
+</style>
+
 <style>
+	/* Холст 1920×1080 в пикселях холста, то есть в корнях по 32. */
 	.missing {
+		--not-found-accent: #d1d1d1;
+		/* Чуть светлее #7e7c7c табло: мелкий текст на #131111 должен держать контраст 4,5:1. */
+		--not-found-muted: #918f8f;
+		--not-found-radius: 0.75rem;
 		display: flex;
-		flex-direction: column;
 		align-items: center;
 		justify-content: center;
-		width: 1920rem;
-		height: 1080rem;
+		width: 60rem;
+		height: 33.75rem;
 		color: #d1d1d1;
+	}
 
-		&__title {
-			font-size: 96rem;
-		}
-
-		&__link {
-			font-size: 56rem;
-			color: #7e7c7c;
-		}
+	.missing :global(.not-found__code) {
+		font-family: Blinker, sans-serif;
 	}
 </style>

@@ -1,4 +1,4 @@
-import { expectAccessible, expectHealthyPage } from '@aimuzov-projects/infra-site-kit/playwright/checks'
+import { expectAccessible, expectHealthyPage, siteChecks } from '@aimuzov-projects/infra-site-kit/playwright/checks'
 import { test } from '@playwright/test'
 
 import { TV_COUNT } from '#shared/constants.ts'
@@ -23,3 +23,12 @@ for (const path of paths) {
 		await expectAccessible(page)
 	})
 }
+
+// Страницы и axe по sitemap выключены: таплист обходит их циклом выше. Поэтому и axe
+// для 404 свой, тем более что схема у сайта одна, тёмная.
+siteChecks({ pages: false, a11y: false, notFound: { suggest: false } })
+
+test('the not-found page passes axe', async ({ page }) => {
+	await page.goto('/kit-404-probe')
+	await expectAccessible(page)
+})
