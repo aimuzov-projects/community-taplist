@@ -105,7 +105,12 @@
 			<span class="editor__logo"><Beer size={28} /></span>
 			<span class="editor__title">Таплист</span>
 			<span class="editor__subtitle">редактор</span>
-			<span class="editor__version">v{import.meta.env.APP_VERSION}</span>
+			<a
+				class="editor__version"
+				href="/changelog"
+				aria-label="Что нового в версии {import.meta.env.APP_VERSION}"
+				use:tooltip={'Что нового'}>v{import.meta.env.APP_VERSION}</a
+			>
 		</div>
 
 		<p
@@ -257,6 +262,12 @@
 		&__version {
 			font-size: 13px;
 			color: var(--muted);
+			text-decoration: none;
+
+			&:hover,
+			&:focus-visible {
+				color: var(--fg);
+			}
 		}
 
 		&__status {

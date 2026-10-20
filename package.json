@@ -1,6 +1,7 @@
 {
 	"name": "community-taplist",
 	"type": "module",
+	"changelog": true,
 	"version": "2.3.0",
 	"private": true,
 	"description": "Электронный таплист крафтового бара: табло на телевизорах и веб-редактор, данные в GitHub Gist",
@@ -34,6 +35,7 @@
 		"@types/node": "26.6.5",
 		"astro": "7.3.7",
 		"conventional-commits-filter": "5.0.0",
+		"lucide-static": "1.48.0",
 		"oxlint": "1.87.0",
 		"postcss-custom-media": "12.0.3",
 		"postcss-nested": "8.0.1",

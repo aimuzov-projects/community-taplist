@@ -5,7 +5,7 @@ import { TV_COUNT } from '#shared/constants.ts'
 
 // Общие проверки сайтов из infra-site-kit. Sitemap у таплиста нет, поэтому страницы
 // перечислены здесь. Темы и Метрики тоже нет.
-const paths = ['/', ...Array.from({ length: TV_COUNT }, (_, index) => `/tv/${index + 1}`), '/editor']
+const paths = ['/', ...Array.from({ length: TV_COUNT }, (_, index) => `/tv/${index + 1}`), '/editor', '/changelog']
 
 // Обложки в моках ссылаются на внешний хостинг. Отвечаем за него пустой картинкой,
 // чтобы тесты не зависели от сети.
