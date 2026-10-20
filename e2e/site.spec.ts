@@ -24,10 +24,10 @@ for (const path of paths) {
 	})
 }
 
-// Страницы и axe по sitemap выключены: таплист обходит их циклом выше, а ширину кит
-// сверяет по тому же списку. Поэтому и axe для 404 свой, тем более что схема у сайта
-// одна, тёмная.
-siteChecks({ pages: false, a11y: false, gutter: { paths }, notFound: { suggest: false } })
+// Страницы и axe по sitemap выключены: таплист обходит их циклом выше, а ширину
+// и подсветку касания кит сверяет по тому же списку. Поэтому и axe для 404 свой,
+// тем более что схема у сайта одна, тёмная.
+siteChecks({ pages: false, a11y: false, gutter: { paths }, tapHighlight: { paths }, notFound: { suggest: false } })
 
 test('the not-found page passes axe', async ({ page }) => {
 	await page.goto('/kit-404-probe')
