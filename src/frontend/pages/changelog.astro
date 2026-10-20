@@ -1,0 +1,82 @@
+---
+import Changelog from '@aimuzov-projects/infra-site-kit/changelog.astro'
+import type { Release } from '@aimuzov-projects/infra-site-kit/changelog.js'
+import * as lucide from 'lucide-static'
+
+import changelog from '#frontend/data/changelog.json'
+import Base from '#frontend/layouts/base.astro'
+
+// Тип Release в ките требует дату, заголовок и пункты и у скрытой записи `{ version, hidden }`,
+// хотя verify и страница её принимают.
+const releases = changelog as Release[]
+---
+
+<Base title="Что нового в Таплисте">
+	<div class="changelog-page">
+		<header class="changelog-page__bar">
+			<span class="changelog-page__title">Таплист</span>
+			<a class="changelog-page__back" href="/editor">
+				← К редактору
+			</a>
+		</header>
+
+		<main class="changelog-page__main">
+			<Changelog
+				{releases}
+				icons={lucide}
+				lead="Как менялся Таплист: что нового на табло, что стало удобнее в редакторе и что исправлено."
+			/>
+		</main>
+	</div>
+</Base>
+
+<style is:global>
+	/* Палитра редактора: страницу открывают из него. */
+	body {
+		color: #f1e6d3;
+		background-color: #131111;
+	}
+</style>
+
+<style>
+	.changelog-page {
+		--fg: #f1e6d3;
+		--muted: #8a7e72;
+		--accent: #e0a458;
+		--line: #2e2725;
+
+		&__bar {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			max-width: 1240px;
+			height: 64px;
+			margin: 0 auto;
+			padding: 0 32px;
+			border-bottom: 1px solid var(--line);
+		}
+
+		&__title {
+			font-size: 26px;
+			font-weight: 700;
+		}
+
+		&__back {
+			font-size: 15px;
+			color: var(--muted);
+			text-decoration: none;
+
+			&:hover,
+			&:focus-visible {
+				color: var(--fg);
+			}
+		}
+
+		&__main {
+			--changelog-accent: var(--accent);
+			--changelog-muted: var(--muted);
+			--changelog-padding: 40px 32px 64px;
+			--changelog-width: 1240px;
+		}
+	}
+</style>
