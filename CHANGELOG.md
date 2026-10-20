@@ -1,5 +1,15 @@
 # Changelog
 
+## [2.4.1](https://github.com/aimuzov-projects/community-taplist/compare/v2.4.0...v2.4.1) (2026-10-20)
+
+
+### Bug Fixes
+
+* drop the changelog cast with infra-site-kit 1.14.1 ([03812e4](https://github.com/aimuzov-projects/community-taplist/commit/03812e46aeb8e4c58239cb82dcdceddd30a2cf67))
+* drop the changelog cast with infra-site-kit 1.14.1 ([50bac84](https://github.com/aimuzov-projects/community-taplist/commit/50bac84f33237fbd4bf67a13a4df534430492f44))
+* keep short prepositions off line ends on What's new ([36bf410](https://github.com/aimuzov-projects/community-taplist/commit/36bf41045fffcf24a339ad5b3c5f8246c551eba3))
+* keep short prepositions off line ends on What's new ([64339b3](https://github.com/aimuzov-projects/community-taplist/commit/64339b3dccc3a58295d3db211cb27e2e54c42c0b))
+
 ## [2.4.0](https://github.com/aimuzov-projects/community-taplist/compare/v2.3.0...v2.4.0) (2026-10-20)
 
 
