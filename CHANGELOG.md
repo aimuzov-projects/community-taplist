@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.4.2](https://github.com/aimuzov-projects/community-taplist/compare/v2.4.1...v2.4.2) (2026-10-20)
+
+
+### Bug Fixes
+
+* **deps:** move to infra-site-kit v2 with base.css ([d30007d](https://github.com/aimuzov-projects/community-taplist/commit/d30007df8d4fc52d6a25c48e3708a42cf407b5a2))
+* **deps:** move to infra-site-kit v2 with base.css ([c16c810](https://github.com/aimuzov-projects/community-taplist/commit/c16c8106ee78b06abcd53fad97f3a917534a9985))
+
 ## [2.4.1](https://github.com/aimuzov-projects/community-taplist/compare/v2.4.0...v2.4.1) (2026-10-20)
 
 
