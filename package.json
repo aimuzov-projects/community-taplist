@@ -2,7 +2,7 @@
 	"name": "community-taplist",
 	"type": "module",
 	"changelog": true,
-	"version": "2.3.0",
+	"version": "2.4.0",
 	"private": true,
 	"description": "Электронный таплист крафтового бара: табло на телевизорах и веб-редактор, данные в GitHub Gist",
 	"license": "MIT",

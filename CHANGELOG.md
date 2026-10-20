@@ -1,5 +1,15 @@
 # Changelog
 
+## [2.4.0](https://github.com/aimuzov-projects/community-taplist/compare/v2.3.0...v2.4.0) (2026-10-20)
+
+
+### Features
+
+* add a What's new page linked from the editor version ([6fdc55d](https://github.com/aimuzov-projects/community-taplist/commit/6fdc55df45c0d33525969a36b2ff214a7ff113ea))
+* add a What's new page linked from the editor version ([a722839](https://github.com/aimuzov-projects/community-taplist/commit/a7228394c395b851a6743fa5986592c85ebbf6e0))
+* reserve the scrollbar gutter on every page ([d9267ec](https://github.com/aimuzov-projects/community-taplist/commit/d9267eccc73d728f3fbbbe910a463243c91d43a9))
+* reserve the scrollbar gutter on every page ([cd1ea5c](https://github.com/aimuzov-projects/community-taplist/commit/cd1ea5cd7546cb9c2dc5aaa23c85b90e8bfd5b84))
+
 ## [2.3.0](https://github.com/aimuzov-projects/community-taplist/compare/v2.2.1...v2.3.0) (2026-10-18)
 
 
