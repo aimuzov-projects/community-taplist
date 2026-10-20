@@ -6,12 +6,12 @@ import releases from '#frontend/data/changelog.json'
 import Base from '#frontend/layouts/base.astro'
 ---
 
-<Base title="Что нового в Таплисте">
+<Base title="Что нового в Таплисте">
 	<div class="changelog-page">
 		<header class="changelog-page__bar">
 			<span class="changelog-page__title">Таплист</span>
 			<a class="changelog-page__back" href="/editor">
-				← К редактору
+				← К редактору
 			</a>
 		</header>
 
@@ -19,7 +19,7 @@ import Base from '#frontend/layouts/base.astro'
 			<Changelog
 				{releases}
 				icons={lucide}
-				lead="Как менялся Таплист: что нового на табло, что стало удобнее в редакторе и что исправлено."
+				lead="Как менялся Таплист: что нового на табло, что стало удобнее в редакторе и что исправлено."
 			/>
 		</main>
 	</div>
