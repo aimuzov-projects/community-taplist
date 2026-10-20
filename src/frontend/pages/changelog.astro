@@ -1,14 +1,9 @@
 ---
 import Changelog from '@aimuzov-projects/infra-site-kit/changelog.astro'
-import type { Release } from '@aimuzov-projects/infra-site-kit/changelog.js'
 import * as lucide from 'lucide-static'
 
-import changelog from '#frontend/data/changelog.json'
+import releases from '#frontend/data/changelog.json'
 import Base from '#frontend/layouts/base.astro'
-
-// Тип Release в ките требует дату, заголовок и пункты и у скрытой записи `{ version, hidden }`,
-// хотя verify и страница её принимают.
-const releases = changelog as Release[]
 ---
 
 <Base title="Что нового в Таплисте">
