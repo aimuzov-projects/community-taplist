@@ -57,4 +57,5 @@ jobs:
         with:
           ssh-key: ${{ secrets.DEPLOY_SSH_KEY }}
           url: https://taplist.aimuzov.online/
+          health-url: https://taplist.aimuzov.online/api/health
           ref: ${{ needs.release.outputs.tag || inputs.tag }}
