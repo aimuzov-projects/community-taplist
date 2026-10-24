@@ -8,7 +8,7 @@
 </p>
 
 <p align="center">
-	<a href="https://github.com/aimuzov/community-taplist/actions/workflows/deploy.yml"><img src="https://img.shields.io/github/actions/workflow/status/aimuzov/community-taplist/deploy.yml?branch=main&label=deploy" alt="Deploy"></a>
+	<a href="https://github.com/aimuzov/community-taplist/actions/workflows/deploy.yml"><img src="https://img.shields.io/github/actions/workflow/status/aimuzov/community-taplist/deploy.yml?branch=main&label=release" alt="Release"></a>
 	<a href="https://taplist.aimuzov.online"><img src="https://img.shields.io/website?url=https%3A%2F%2Ftaplist.aimuzov.online&label=site" alt="Site status"></a>
 	<a href="package.json"><img src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Faimuzov%2Fcommunity-taplist%2Fmain%2Fpackage.json&query=%24.engines.node&label=node&logo=nodedotjs&logoColor=white&color=5fa04e" alt="Node"></a>
 	<a href="https://astro.build"><img src="https://img.shields.io/github/package-json/dependency-version/aimuzov/community-taplist/dev/astro?logo=astro&logoColor=white&color=bc52ee" alt="Astro"></a>
@@ -83,7 +83,7 @@ The build puts a CSP with hashes of Astro scripts and styles into every page (`s
 
 Merging the release PR that release-please keeps open runs GitHub Actions: checks first, then SSH into the `projects` server. There the key runs the shared [`deploy/site.sh`](https://github.com/aimuzov/infra-server/blob/main/deploy/site.sh) of infra-server, which pulls `main` and rebuilds the containers from [`deploy/docker-compose.yml`](deploy/docker-compose.yml): nginx with the static site and the API. The domain, TLS and the editor password (`basic_auth` on `/editor` and `PUT /api/items`) are handled by the shared Caddy from `aimuzov/infra-server`. `.env` lives on the server in `/srv/community-taplist`.
 
-To roll back fast, run Deploy by hand with the previous tag: `gh workflow run deploy.yml -f tag=v1.2.3`. A fix of the bad commit goes out through the release PR like any change. `site.sh` runs compose with `--remove-orphans`, so containers the previous version did not have go away on their own.
+To roll back fast, run Release by hand with the previous tag: `gh workflow run deploy.yml -f tag=v1.2.3`. A fix of the bad commit goes out through the release PR like any change. `site.sh` runs compose with `--remove-orphans`, so containers the previous version did not have go away on their own.
 
 ## Acknowledgements
 
