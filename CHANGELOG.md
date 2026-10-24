@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.4.3](https://github.com/aimuzov/community-taplist/compare/v2.4.2...v2.4.3) (2026-10-24)
+
+
+### Bug Fixes
+
+* **deps:** move to infra-site-kit v3 under the personal aimuzov account ([2848a75](https://github.com/aimuzov/community-taplist/commit/2848a75bafa88e083c88419c899008dbd673e2fc))
+* **deps:** move to infra-site-kit v3 under the personal aimuzov account ([0b25e50](https://github.com/aimuzov/community-taplist/commit/0b25e50e6c9a21be604e0e030c4c6f124b746c9a))
+
 ## [2.4.2](https://github.com/aimuzov-projects/community-taplist/compare/v2.4.1...v2.4.2) (2026-10-20)
 
 
