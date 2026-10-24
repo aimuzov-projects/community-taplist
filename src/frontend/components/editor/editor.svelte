@@ -8,7 +8,7 @@
 	import Save from '@lucide/svelte/icons/save'
 	import Tv from '@lucide/svelte/icons/tv'
 	import Undo2 from '@lucide/svelte/icons/undo-2'
-	import Credit from '@aimuzov-projects/infra-site-kit/credit.svelte'
+	import Credit from '@aimuzov/infra-site-kit/credit.svelte'
 	import { onMount } from 'svelte'
 
 	import Spinner from '#frontend/components/spinner.svelte'
@@ -195,7 +195,7 @@
 	{/if}
 
 	<footer class="editor__footer">
-		<Credit repo="https://github.com/aimuzov-projects/community-taplist" />
+		<Credit repo="https://github.com/aimuzov/community-taplist" />
 	</footer>
 </form>
 

@@ -1,5 +1,5 @@
 # Таплист на сервере projects. Порты 80/443 держит общий Caddy
-# из aimuzov-projects/infra-server: он проксирует домен сюда по сети edge,
+# из aimuzov/infra-server: он проксирует домен сюда по сети edge,
 # а /api/* -- сервису API. Там же Caddy проверяет пароль редактора.
 
 name: community-taplist
