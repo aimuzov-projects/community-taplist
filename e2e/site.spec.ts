@@ -1,4 +1,4 @@
-import { expectAccessible, expectHealthyPage, siteChecks } from '@aimuzov-projects/infra-site-kit/playwright/checks'
+import { expectAccessible, expectHealthyPage, siteChecks } from '@aimuzov/infra-site-kit/playwright/checks'
 import { test } from '@playwright/test'
 
 import { TV_COUNT } from '#shared/constants.ts'
